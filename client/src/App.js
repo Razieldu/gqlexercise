@@ -1,5 +1,5 @@
 import { useEffect, useState, useReducer } from "react";
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import "./App.css";
 import client from "./apollo.js";
 import { BarLoader } from "react-spinners";
@@ -34,7 +34,7 @@ const formReducer = (state, action) => {
     case "mobilephone":
       return { ...state, mobilephone: action.payload };
     case "reset":
-      return initialState
+      return initialState;
     default:
       throw new Error(`Invalid action type ${action.type}`);
   }
@@ -43,25 +43,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [resultdata, setData] = useState([]);
   const [error, setError] = useState(false);
-  // const [apiState, setApiState] = useState("name");
   const [inputValue, setInputValue] = useState("");
   const [formState, dispatchFn] = useReducer(formReducer, initialState);
-
-  // client
-  //   .query({
-  //     query: gql`
-  //       query {
-  //         getData {
-  //           name
-  //         }
-  //       }
-  //     `,
-  //   })
-  //   .then((result) => {
-  //     console.log(result);
-  //     setData(result.data.getData);
-  //   })
-  //   .catch((error) => console.log(error));
   let defaultApi = "name";
   const fetchData = async (key) => {
     const {
@@ -78,19 +61,34 @@ function App() {
       `,
     });
     // console.log(errors)
-    let dealedData = data.userdata.slice(0, 5);
+    let datalength = data.userdata.length;
+    let dealedData = data.userdata.slice(datalength - 5, datalength);
     setData(dealedData);
+    // setData(data.userdata)
     setLoading(queryLoading);
     setError(errors);
   };
+  const ADD_USER_MUTATION = gql`
+    mutation addUser($userInput: UserInput!) {
+      addUser(userInput: $userInput)
+    }
+  `;
+  const [addUserMutation, { sendLoading, sendDataError, sendData }] =
+    useMutation(ADD_USER_MUTATION, {
+      onCompleted: (data) => {
+        console.log(data);
+        alert("成功新增資料"); // 成功回應資料
+      },
+    });
+
   const handleInputValue = (event) => {
     setInputValue(event.target.value);
   };
 
   const handleAPI = (event) => {
     event.preventDefault();
-    setLoading(true);
     if (inputValue === "") return;
+    setLoading(true);
     fetchData(inputValue);
   };
 
@@ -103,8 +101,15 @@ function App() {
     for (let key in formState) {
       if (formState[key] === "") return;
     }
-    dispatchFn({type:"reset"})
-    console.log(formState);
+    dispatchFn({ type: "reset" });
+    addUserMutation({
+      variables: {
+        userInput: formState,
+      },
+    })
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+    // console.log(formState);
   };
 
   return (
@@ -115,6 +120,7 @@ function App() {
         justifyContent: "center",
         flexDirection: "column",
         alignItems: "center",
+        paddingTop: "20px",
       }}
     >
       <form onSubmit={handleAPI}>
@@ -148,8 +154,9 @@ function App() {
       )}
 
       {error && <p>Error {error.message}</p>}
-      <div style={{ position: "absolute", top: "65vh", width: "300px" }}>
-        <form onSubmit={(event)=>handleFormSubmit(event,formState)}>
+      <div style={{ position: "absolute", top: "55vh", width: "300px" }}>
+        <form onSubmit={(event) => handleFormSubmit(event, formState)}>
+          <h1 style={{ textAlign: "center" }}>新增列表</h1>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <label>單位</label>
             <input

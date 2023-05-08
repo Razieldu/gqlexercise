@@ -31,6 +31,23 @@ async function getUsers() {
   }
 }
 
+///添加資料到資料庫
+async function addUser(userInput) {
+  try {
+    await client.connect();
+    const databaseName = 'usersData';
+    const collectionName = 'Data';
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const result = await collection.insertOne(userInput);
+    console.log(`User with id ${result.insertedId} has been added to the database.`);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    client.close();
+  }
+}
+
 const typeDefs = gql`
   type Query {
     hello: String
@@ -47,18 +64,36 @@ const typeDefs = gql`
     tel: String
     mobilephone: String
   }
+  
+  type Mutation {
+    addUser(userInput: UserInput!): String
+  }
+
+  input UserInput {
+    id:String!
+    name: String!
+    email: String!
+    workplace: String!
+    worktitle: String!
+    address: String!
+    tel: String!
+    mobilephone: String!
+  }
 `;
 
 const resolvers = {
   Query: {
     hello: () => 'Hello World!',
-    userdata: () => getUsers()
+    userdata: () => getUsers(),
     // () => {
     //   //本地端拿資料
     //   const rawData = fs.readFileSync(path.join(__dirname, 'data.json'));
     //   const data = JSON.parse(rawData);
     //   return data;
     // }
+  },
+  Mutation: {
+    addUser: (_, args) => addUser(args.userInput)
   }
 };
 
