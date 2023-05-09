@@ -47,6 +47,7 @@ function App() {
   const [formState, dispatchFn] = useReducer(formReducer, initialState);
   const [targetSearchInput, setTargetSearchInput] = useState("");
   const [targetSearchData, setTargetSearchData] = useState([]);
+  const [deleteInput,setDeleteInput]=useState("")
   let defaultApi = "name";
   const fetchData = async (key) => {
     const {
@@ -101,7 +102,7 @@ function App() {
 
   const handleFormSubmit = (event, formState) => {
     event.preventDefault();
-    if(Object.keys(formState).some((key) => formState[key] === "")) return
+    if (Object.keys(formState).some((key) => formState[key] === "")) return;
     dispatchFn({ type: "reset" });
     addUserMutation({
       variables: {
@@ -117,6 +118,7 @@ function App() {
   const SEARCH_USERS_QUERY = gql`
     query SearchUsers($searchTerm: String!) {
       searchUsers(searchTerm: $searchTerm) {
+        dataId
         id
         name
         email
@@ -130,15 +132,14 @@ function App() {
   `;
 
   async function searchUsers(searchTerm) {
-    console.log(`${searchTerm} searchTerm`)
+    // console.log(`${searchTerm} searchTerm`);
     try {
       const { data } = await client.query({
         query: SEARCH_USERS_QUERY,
         variables: { searchTerm },
       });
-      console.log(data.searchUsers)
+      // console.log(data.searchUsers);
       setTargetSearchData(data.searchUsers);
-      
     } catch (error) {
       console.error(error);
     }
@@ -146,17 +147,44 @@ function App() {
 
   const handleTargetSearch = (event) => {
     setTargetSearchInput(event.target.value);
-    console.log(`${event.target.value} 輸入值`)
   };
 
   const handleTargetSearchFormSubmit = (event, value) => {
-    console.log(`${value} submitvalue`)
     event.preventDefault();
-    if(value==="") return 
+    if (value === "") return;
     searchUsers(value);
-    setTargetSearchInput("")
+    setTargetSearchInput("");
     // console.log(targetSearchData)
   };
+  const DELETE_USER_MUTATION = gql`
+  mutation DeleteUser($deleteUserId: String!) {
+    deleteUser(id: $deleteUserId)
+  }
+  
+`;
+const [deleteUserMutation] =
+useMutation(DELETE_USER_MUTATION, {
+  onCompleted: (data) => {
+    console.log(data);
+    alert("成功刪除資料"); // 成功回應資料
+  },
+});
+
+  const handledelete =(event,value)=>{
+  if(value==="") return
+  event.preventDefault()
+  deleteUserMutation({
+    variables: {
+      deleteUserId: value,
+    },
+  })
+    .then((result) => console.log(result))
+    .catch((error) => console.error(error));
+  }
+  const handleDeleteInput = (event)=>{
+  setDeleteInput(event.target.value)
+  }
+
   return (
     <div
       style={{
@@ -166,9 +194,10 @@ function App() {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: "20px",
+
       }}
     >
-      <h1>向資料庫要資料區塊</h1>
+      <h1>向資料庫要資料並顯示</h1>
       <form onSubmit={handleAPI}>
         <input value={inputValue} onChange={handleInputValue} />
         <button>Search</button>
@@ -200,9 +229,9 @@ function App() {
       )}
 
       {error && <p>Error {error.message}</p>}
-      <div style={{ position: "absolute", top: "60vh", width: "300px" }}>
+      <div style={{ position: "absolute", top: "70vh", width: "300px" }}>
         <form onSubmit={(event) => handleFormSubmit(event, formState)}>
-          <h1 style={{ textAlign: "center" }}>新增列表</h1>
+          <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <label>單位</label>
             <input
@@ -280,6 +309,7 @@ function App() {
               width: "300px",
               display: "flex",
               justifyContent: "center",
+              paddingTop:"20px"
             }}
           >
             <button>送出</button>
@@ -289,40 +319,69 @@ function App() {
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
           position: "absolute",
-          top: "95vh",
+          top: "115vh",
           width: "300px",
+          minHeight:"300px",
           flexDirection: "column",
         }}
       >
+        <h1>查詢符合條件的資料</h1>
         <form
           onSubmit={(event) =>
             handleTargetSearchFormSubmit(event, targetSearchInput)
           }
         >
-          <h1>查詢區域</h1>
           <input value={targetSearchInput} onChange={handleTargetSearch} />
           <button>查找</button>
-          {targetSearchData.map((each,index)=>{
-           return(
-           <div style={{backgroundColor:index%2===0?"white":"silver"}} key={`${index}${each}${index}`} >
-           <p>id:{each.id}</p>
-           <p>name:{each.name}</p>
-           <p>email:{each.email}</p>
-           <p>workplace:{each.workplace}</p>
-           <p>worktitle:{each.worktitle}</p>
-           <p>address:{each.address}</p>
-           <p>tel:{each.tel}</p>   
-           <p>mobilephone:{each.mobilephone}</p> 
-           </div>
-           )
-          
-
+          {targetSearchData.map((each, index) => {
+            return (
+              <div
+                style={{
+                  paddingBottom:"150px",
+                  backgroundColor: index % 2 === 0 ? "white" : "silver",
+                }}
+                key={`${index}${each}${index}`}
+              >
+                <p>資料庫id:{each.dataId}</p>
+                <p>id:{each.id}</p>
+                <p>name:{each.name}</p>
+                <p>email:{each.email}</p>
+                <p>workplace:{each.workplace}</p>
+                <p>worktitle:{each.worktitle}</p>
+                <p>address:{each.address}</p>
+                <p>tel:{each.tel}</p>
+                <p>mobilephone:{each.mobilephone}</p>
+              </div>
+            );
           })}
         </form>
+        <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          position: "fixed",
+          bottom:"10px",
+          width: "300px",
+          flexDirection: "column",
+          backgroundColor:"pink",
+          paddingBottom:"40px",
+          height:"100px"
+        }}
+      >
+        <h1>刪除區塊</h1>
+        <form
+          onSubmit={(event) =>
+            handledelete(event,deleteInput)
+          }
+        >
+          <input value={deleteInput} onChange={handleDeleteInput}/>
+          <button>刪除</button>
+        </form>
       </div>
+      </div>
+  
     </div>
   );
 }

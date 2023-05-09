@@ -3,7 +3,8 @@ const { ApolloServer, gql } = require('apollo-server-express');
 const path = require('path');
 // const fs = require('fs');
 require('dotenv').config();
-const { MongoClient } = require('mongodb');
+const { MongoClient,  ObjectId } = require('mongodb');
+
 
 const uri = process.env.DB_HOST;
 
@@ -48,6 +49,7 @@ async function addUser(userInput) {
   }
 }
 
+////搜尋功能
 async function searchUser(searchTerm) {
   try {
     await client.connect();
@@ -79,6 +81,52 @@ async function searchUser(searchTerm) {
   }
 }
 
+///刪除功能
+// async function deleteUser(id) {
+//   try {
+//     await client.connect();
+
+//     const databaseName = 'usersData'; // 指定資料庫名稱
+//     const collectionName = 'Data'; // 指定 collection 名稱
+
+//     const database = client.db(databaseName);
+//     const collection = database.collection(collectionName);
+
+//     const result = await collection.deleteOne({ id }); // 刪除符合條件的資料
+
+//     if (result.deletedCount === 1) {
+//       return `User with id ${id} has been deleted from the database.`;
+//     } else {
+//       return `User with id ${id} does not exist in the database.`;
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   } finally {
+//     client.close(); // 關閉連線
+//   }
+// }
+async function deleteUser(id) {
+  try {
+    await client.connect();
+
+    const databaseName = 'usersData'; // 指定資料庫名稱
+    const collectionName = 'Data'; // 指定 collection 名稱
+
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const _id = new ObjectId(id);
+
+    await collection.deleteOne({ _id: _id }); // 刪除指定用戶資料
+
+    console.log(`User with id ${id} was successfully deleted.`); // 在控制台中顯示刪除成功信息
+  } catch (error) {
+    console.error(error);
+  } finally {
+    client.close(); // 關閉連線
+  }
+}
+
+
 
 const typeDefs = gql`
   type Query {
@@ -99,6 +147,7 @@ const typeDefs = gql`
   }
   
   type User {
+    dataId:ID
     id:String
     name: String
     email: String
@@ -111,6 +160,7 @@ const typeDefs = gql`
 
   type Mutation {
     addUser(userInput: UserInput!): String
+    deleteUser(id: String!): String
   }
 
   input UserInput {
@@ -129,7 +179,15 @@ const resolvers = {
   Query: {
     hello: () => 'Hello World!',
     userdata: () => getUsers(),
-    searchUsers: (_, { searchTerm }) => searchUser(searchTerm)
+    searchUsers: async (_, { searchTerm }) => {
+      try {
+        const users = await searchUser(searchTerm);
+        return users.map(user => ({ ...user, id: user._id.toString() }));
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
     // () => {
     //   //本地端拿資料
     //   const rawData = fs.readFileSync(path.join(__dirname, 'data.json'));
@@ -138,7 +196,8 @@ const resolvers = {
     // }
   },
   Mutation: {
-    addUser: (_, args) => addUser(args.userInput)
+    addUser: (_, args) => addUser(args.userInput),
+    deleteUser: (_, { id }) => deleteUser(id)
   }
 };
 
