@@ -48,10 +48,43 @@ async function addUser(userInput) {
   }
 }
 
+async function searchUser(searchTerm) {
+  try {
+    await client.connect();
+
+    const databaseName = 'usersData'; // 指定資料庫名稱
+    const collectionName = 'Data'; // 指定 collection 名稱
+
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+
+    const users = await collection.find({
+      $or: [
+        { id: { $regex: searchTerm, $options: 'i' } },
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { email: { $regex: searchTerm, $options: 'i' } },
+        { workplace: { $regex: searchTerm, $options: 'i' } },
+        { worktitle: { $regex: searchTerm, $options: 'i' } },
+        { address: { $regex: searchTerm, $options: 'i' } },
+        { tel: { $regex: searchTerm, $options: 'i' } },
+        { mobilephone: { $regex: searchTerm, $options: 'i' } }
+      ]
+    }).toArray(); // 搜索匹配的用戶資料
+
+    return users; // 返回用戶資料
+  } catch (error) {
+    console.error(error);
+  } finally {
+    client.close(); // 關閉連線
+  }
+}
+
+
 const typeDefs = gql`
   type Query {
     hello: String
     userdata: [Data]
+    searchUsers(searchTerm: String!): [User]
   }
 
   type Data {
@@ -65,6 +98,17 @@ const typeDefs = gql`
     mobilephone: String
   }
   
+  type User {
+    id:String
+    name: String
+    email: String
+    workplace: String
+    worktitle: String
+    address: String
+    tel: String
+    mobilephone: String
+  }
+
   type Mutation {
     addUser(userInput: UserInput!): String
   }
@@ -85,6 +129,7 @@ const resolvers = {
   Query: {
     hello: () => 'Hello World!',
     userdata: () => getUsers(),
+    searchUsers: (_, { searchTerm }) => searchUser(searchTerm)
     // () => {
     //   //本地端拿資料
     //   const rawData = fs.readFileSync(path.join(__dirname, 'data.json'));

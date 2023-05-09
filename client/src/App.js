@@ -45,6 +45,8 @@ function App() {
   const [error, setError] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [formState, dispatchFn] = useReducer(formReducer, initialState);
+  const [targetSearchInput, setTargetSearchInput] = useState("");
+  const [targetSearchData, setTargetSearchData] = useState([]);
   let defaultApi = "name";
   const fetchData = async (key) => {
     const {
@@ -68,18 +70,6 @@ function App() {
     setLoading(queryLoading);
     setError(errors);
   };
-  const ADD_USER_MUTATION = gql`
-    mutation addUser($userInput: UserInput!) {
-      addUser(userInput: $userInput)
-    }
-  `;
-  const [addUserMutation, { sendLoading, sendDataError, sendData }] =
-    useMutation(ADD_USER_MUTATION, {
-      onCompleted: (data) => {
-        console.log(data);
-        alert("成功新增資料"); // 成功回應資料
-      },
-    });
 
   const handleInputValue = (event) => {
     setInputValue(event.target.value);
@@ -96,11 +86,22 @@ function App() {
     fetchData(defaultApi);
   }, [defaultApi]);
 
+  const ADD_USER_MUTATION = gql`
+    mutation addUser($userInput: UserInput!) {
+      addUser(userInput: $userInput)
+    }
+  `;
+  const [addUserMutation, { sendLoading, sendDataError, sendData }] =
+    useMutation(ADD_USER_MUTATION, {
+      onCompleted: (data) => {
+        console.log(data);
+        alert("成功新增資料"); // 成功回應資料
+      },
+    });
+
   const handleFormSubmit = (event, formState) => {
     event.preventDefault();
-    for (let key in formState) {
-      if (formState[key] === "") return;
-    }
+    if(Object.keys(formState).some((key) => formState[key] === "")) return
     dispatchFn({ type: "reset" });
     addUserMutation({
       variables: {
@@ -112,6 +113,50 @@ function App() {
     // console.log(formState);
   };
 
+  ///處理搜尋
+  const SEARCH_USERS_QUERY = gql`
+    query SearchUsers($searchTerm: String!) {
+      searchUsers(searchTerm: $searchTerm) {
+        id
+        name
+        email
+        workplace
+        worktitle
+        address
+        tel
+        mobilephone
+      }
+    }
+  `;
+
+  async function searchUsers(searchTerm) {
+    console.log(`${searchTerm} searchTerm`)
+    try {
+      const { data } = await client.query({
+        query: SEARCH_USERS_QUERY,
+        variables: { searchTerm },
+      });
+      console.log(data.searchUsers)
+      setTargetSearchData(data.searchUsers);
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleTargetSearch = (event) => {
+    setTargetSearchInput(event.target.value);
+    console.log(`${event.target.value} 輸入值`)
+  };
+
+  const handleTargetSearchFormSubmit = (event, value) => {
+    console.log(`${value} submitvalue`)
+    event.preventDefault();
+    if(value==="") return 
+    searchUsers(value);
+    setTargetSearchInput("")
+    // console.log(targetSearchData)
+  };
   return (
     <div
       style={{
@@ -123,6 +168,7 @@ function App() {
         paddingTop: "20px",
       }}
     >
+      <h1>向資料庫要資料區塊</h1>
       <form onSubmit={handleAPI}>
         <input value={inputValue} onChange={handleInputValue} />
         <button>Search</button>
@@ -143,7 +189,7 @@ function App() {
           <BarLoader color="#36D7B7" loading={loading} />
         </div>
       ) : (
-        <div>
+        <div style={{ textAlign: "center" }}>
           {resultdata.map((each, index) => {
             for (let key in each) {
               if (key === "__typename") continue;
@@ -154,7 +200,7 @@ function App() {
       )}
 
       {error && <p>Error {error.message}</p>}
-      <div style={{ position: "absolute", top: "55vh", width: "300px" }}>
+      <div style={{ position: "absolute", top: "60vh", width: "300px" }}>
         <form onSubmit={(event) => handleFormSubmit(event, formState)}>
           <h1 style={{ textAlign: "center" }}>新增列表</h1>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -238,6 +284,43 @@ function App() {
           >
             <button>送出</button>
           </div>
+        </form>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          top: "95vh",
+          width: "300px",
+          flexDirection: "column",
+        }}
+      >
+        <form
+          onSubmit={(event) =>
+            handleTargetSearchFormSubmit(event, targetSearchInput)
+          }
+        >
+          <h1>查詢區域</h1>
+          <input value={targetSearchInput} onChange={handleTargetSearch} />
+          <button>查找</button>
+          {targetSearchData.map((each,index)=>{
+           return(
+           <div style={{backgroundColor:index%2===0?"white":"silver"}} key={`${index}${each}${index}`} >
+           <p>id:{each.id}</p>
+           <p>name:{each.name}</p>
+           <p>email:{each.email}</p>
+           <p>workplace:{each.workplace}</p>
+           <p>worktitle:{each.worktitle}</p>
+           <p>address:{each.address}</p>
+           <p>tel:{each.tel}</p>   
+           <p>mobilephone:{each.mobilephone}</p> 
+           </div>
+           )
+          
+
+          })}
         </form>
       </div>
     </div>
