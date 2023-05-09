@@ -81,30 +81,6 @@ async function searchUser(searchTerm) {
   }
 }
 
-///刪除功能
-// async function deleteUser(id) {
-//   try {
-//     await client.connect();
-
-//     const databaseName = 'usersData'; // 指定資料庫名稱
-//     const collectionName = 'Data'; // 指定 collection 名稱
-
-//     const database = client.db(databaseName);
-//     const collection = database.collection(collectionName);
-
-//     const result = await collection.deleteOne({ id }); // 刪除符合條件的資料
-
-//     if (result.deletedCount === 1) {
-//       return `User with id ${id} has been deleted from the database.`;
-//     } else {
-//       return `User with id ${id} does not exist in the database.`;
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   } finally {
-//     client.close(); // 關閉連線
-//   }
-// }
 async function deleteUser(id) {
   try {
     await client.connect();

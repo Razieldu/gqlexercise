@@ -336,6 +336,7 @@ useMutation(DELETE_USER_MUTATION, {
           <input value={targetSearchInput} onChange={handleTargetSearch} />
           <button>查找</button>
           {targetSearchData.map((each, index) => {
+            console.log(each)
             return (
               <div
                 style={{
