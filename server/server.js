@@ -65,11 +65,15 @@ async function searchUser(searchTerm) {
 
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
-    const databaseId = ObjectId.isValid(searchTerm) ? new ObjectId(searchTerm) : null;
+    let databaseId = null;
+    if (searchTerm.match(/^[0-9a-fA-F]{24}$/)) {
+      databaseId = new ObjectId(searchTerm);
+    }
+    // const databaseId = ObjectId.isValid(searchTerm) ? new ObjectId(searchTerm) : null;
     const users = await collection
       .find({
         $or: [
-          { _id: databaseId != null ? databaseId : { $ne: null } },
+          { _id: databaseId },
           { id: { $regex: searchTerm, $options: "i" } },
           { name: { $regex: searchTerm, $options: "i" } },
           { email: { $regex: searchTerm, $options: "i" } },
@@ -101,7 +105,7 @@ async function deleteUser(id) {
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
     const _id = new ObjectId(id);
-
+   
     await collection.deleteOne({ _id: _id }); // 刪除指定用戶資料
 
     console.log(`User with id ${id} was successfully deleted.`); // 在控制台中顯示刪除成功信息
