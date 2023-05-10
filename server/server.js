@@ -1,14 +1,16 @@
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
-const path = require('path');
+const express = require("express");
+const { ApolloServer, gql } = require("apollo-server-express");
+const path = require("path");
 // const fs = require('fs');
-require('dotenv').config();
-const { MongoClient,  ObjectId } = require('mongodb');
-
+require("dotenv").config();
+const { MongoClient, ObjectId } = require("mongodb");
 
 const uri = process.env.DB_HOST;
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const app = express();
 
@@ -16,8 +18,8 @@ async function getUsers() {
   try {
     await client.connect();
 
-    const databaseName = 'usersData'; // 指定資料庫名稱
-    const collectionName = 'Data'; // 指定 collection 名稱
+    const databaseName = "usersData"; // 指定資料庫名稱
+    const collectionName = "Data"; // 指定 collection 名稱
 
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
@@ -36,12 +38,14 @@ async function getUsers() {
 async function addUser(userInput) {
   try {
     await client.connect();
-    const databaseName = 'usersData';
-    const collectionName = 'Data';
+    const databaseName = "usersData";
+    const collectionName = "Data";
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
     const result = await collection.insertOne(userInput);
-    console.log(`User with id ${result.insertedId} has been added to the database.`);
+    console.log(
+      `User with id ${result.insertedId} has been added to the database.`
+    );
   } catch (error) {
     console.error(error);
   } finally {
@@ -51,27 +55,33 @@ async function addUser(userInput) {
 
 ////搜尋功能
 async function searchUser(searchTerm) {
+  // let databaseId;
+  console.log(searchTerm)
   try {
     await client.connect();
-
-    const databaseName = 'usersData'; // 指定資料庫名稱
-    const collectionName = 'Data'; // 指定 collection 名稱
+    
+    const databaseName = "usersData"; // 指定資料庫名稱
+    const collectionName = "Data"; // 指定 collection 名稱
 
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
-
-    const users = await collection.find({
-      $or: [
-        { id: { $regex: searchTerm, $options: 'i' } },
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { email: { $regex: searchTerm, $options: 'i' } },
-        { workplace: { $regex: searchTerm, $options: 'i' } },
-        { worktitle: { $regex: searchTerm, $options: 'i' } },
-        { address: { $regex: searchTerm, $options: 'i' } },
-        { tel: { $regex: searchTerm, $options: 'i' } },
-        { mobilephone: { $regex: searchTerm, $options: 'i' } }
-      ]
-    }).toArray(); // 搜索匹配的用戶資料
+    const databaseId = ObjectId.isValid(searchTerm) ? new ObjectId(searchTerm) : null;
+    const users = await collection
+      .find({
+        $or: [
+          { _id: databaseId != null ? databaseId : { $ne: null } },
+          { id: { $regex: searchTerm, $options: "i" } },
+          { name: { $regex: searchTerm, $options: "i" } },
+          { email: { $regex: searchTerm, $options: "i" } },
+          { workplace: { $regex: searchTerm, $options: "i" } },
+          { worktitle: { $regex: searchTerm, $options: "i" } },
+          { address: { $regex: searchTerm, $options: "i" } },
+          { tel: { $regex: searchTerm, $options: "i" } },
+          { mobilephone: { $regex: searchTerm, $options: "i" } },
+          // { _id: databaseId },
+        ],
+      })
+      .toArray(); // 搜索匹配的用戶資料
 
     return users; // 返回用戶資料
   } catch (error) {
@@ -85,8 +95,8 @@ async function deleteUser(id) {
   try {
     await client.connect();
 
-    const databaseName = 'usersData'; // 指定資料庫名稱
-    const collectionName = 'Data'; // 指定 collection 名稱
+    const databaseName = "usersData"; // 指定資料庫名稱
+    const collectionName = "Data"; // 指定 collection 名稱
 
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
@@ -101,8 +111,6 @@ async function deleteUser(id) {
     client.close(); // 關閉連線
   }
 }
-
-
 
 const typeDefs = gql`
   type Query {
@@ -121,10 +129,10 @@ const typeDefs = gql`
     tel: String
     mobilephone: String
   }
-  
+
   type User {
-    dataId:ID
-    id:String
+    dataId: ID
+    id: String
     name: String
     email: String
     workplace: String
@@ -140,7 +148,7 @@ const typeDefs = gql`
   }
 
   input UserInput {
-    id:String!
+    id: String!
     name: String!
     email: String!
     workplace: String!
@@ -153,12 +161,12 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    hello: () => 'Hello World!',
+    hello: () => "Hello World!",
     userdata: () => getUsers(),
     searchUsers: async (_, { searchTerm }) => {
       try {
         const users = await searchUser(searchTerm);
-        return users.map(user => ({ ...user, id: user._id.toString() }));
+        return users.map((user) => ({ ...user, dataId: user._id.toString() }));
       } catch (error) {
         console.error(error);
         throw error;
@@ -173,8 +181,8 @@ const resolvers = {
   },
   Mutation: {
     addUser: (_, args) => addUser(args.userInput),
-    deleteUser: (_, { id }) => deleteUser(id)
-  }
+    deleteUser: (_, { id }) => deleteUser(id),
+  },
 };
 
 const server = new ApolloServer({ typeDefs, resolvers });
@@ -187,16 +195,16 @@ async function startApolloServer() {
   server.applyMiddleware({ app });
 
   // 設定允許跨域的網址，本例只允許本地 3000 端口的訪問
-  const allowedOrigins = ['http://localhost:3000'];
+  const allowedOrigins = ["http://localhost:3000"];
 
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader("Access-Control-Allow-Origin", origin);
     }
     // 設定允許的方法和標頭
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     next(); // 繼續處理請求
   });
 
