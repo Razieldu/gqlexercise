@@ -1,46 +1,10 @@
-import { useReducer } from "react";
+import CustomInputReducer from "../customs/InputHandleReducer";
 import { ADD_USER_MUTATION } from "../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
 
-let initialState = {
-  id: "",
-  name: "",
-  email: "",
-  workplace: "",
-  worktitle: "",
-  address: "",
-  tel: "",
-  mobilephone: "",
-};
-
-const addFormReducer = (state, action) => {
-  switch (action.type) {
-    case "id":
-      return { ...state, id: action.payload };
-    case "name":
-      return { ...state, name: action.payload };
-    case "email":
-      return { ...state, email: action.payload };
-    case "workplace":
-      return { ...state, workplace: action.payload };
-    case "worktitle":
-      return { ...state, worktitle: action.payload };
-    case "address":
-      return { ...state, address: action.payload };
-    case "tel":
-      return { ...state, tel: action.payload };
-    case "mobilephone":
-      return { ...state, mobilephone: action.payload };
-    case "reset":
-      return initialState;
-    default:
-      throw new Error(`Invalid action type ${action.type}`);
-  }
-};
-
 const AddDataPart = () => {
-  const [formState, dispatchFn] = useReducer(addFormReducer, initialState);
-
+  // const { state: formState, dispatch: dispatchFn } = CustomInputReducer();
+  const [formState, dispatchFn] = CustomInputReducer();
   // const [addUserMutation, { sendLoading, sendDataError, sendData }] =
   const [addUserMutation] = useMutation(ADD_USER_MUTATION, {
     onCompleted: (data) => {
