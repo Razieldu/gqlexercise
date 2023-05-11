@@ -25,7 +25,7 @@ async function getUsers() {
     const collection = database.collection(collectionName);
 
     const users = await collection.find({}).toArray(); // 從資料庫中取出所有用戶資料
-
+    // console.log(users);
     return users; // 返回用戶資料
   } catch (error) {
     console.error(error);
@@ -56,10 +56,9 @@ async function addUser(userInput) {
 ////搜尋功能
 async function searchUser(searchTerm) {
   // let databaseId;
-  console.log(searchTerm)
   try {
     await client.connect();
-    
+
     const databaseName = "usersData"; // 指定資料庫名稱
     const collectionName = "Data"; // 指定 collection 名稱
 
@@ -105,7 +104,7 @@ async function deleteUser(id) {
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
     const _id = new ObjectId(id);
-   
+
     await collection.deleteOne({ _id: _id }); // 刪除指定用戶資料
 
     console.log(`User with id ${id} was successfully deleted.`); // 在控制台中顯示刪除成功信息
@@ -124,6 +123,7 @@ const typeDefs = gql`
   }
 
   type Data {
+    dataId:String
     id: String
     name: String
     email: String
@@ -135,7 +135,7 @@ const typeDefs = gql`
   }
 
   type User {
-    dataId: ID
+    dataId: String
     id: String
     name: String
     email: String
@@ -166,7 +166,20 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     hello: () => "Hello World!",
-    userdata: () => getUsers(),
+    userdata: async () => {
+      try {
+        const users = await getUsers();
+        let result = users.map((user) => ({
+          ...user,
+          dataId: user._id.toString(),
+        }));
+        // testData(result)
+        return result;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    },
     searchUsers: async (_, { searchTerm }) => {
       try {
         const users = await searchUser(searchTerm);

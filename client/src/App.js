@@ -1,8 +1,17 @@
 import { useEffect, useState, useReducer } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation, gql} from "@apollo/client";
+
 import "./App.css";
 import client from "./apollo.js";
 import { BarLoader } from "react-spinners";
+import {
+  DataGrid,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarExport,
+  GridToolbarDensitySelector,
+} from "@mui/x-data-grid";
+import { createColumns, createRow } from "./logic";
 
 let initialState = {
   id: "",
@@ -39,17 +48,47 @@ const formReducer = (state, action) => {
       throw new Error(`Invalid action type ${action.type}`);
   }
 };
+
+const CustomToolBar = () => {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarColumnsButton />
+      <GridToolbarDensitySelector />
+      <GridToolbarExport
+        csvOptions={{
+          utf8WithBom: true,
+          fileName: `會員資料_${new Date().toLocaleString()}`,
+        }}
+        printOptions={{
+          disableToolbarButton: true,
+        }}
+      ></GridToolbarExport>
+    </GridToolbarContainer>
+  );
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [resultdata, setData] = useState([]);
   const [error, setError] = useState(false);
-  const [inputValue, setInputValue] = useState("");
   const [formState, dispatchFn] = useReducer(formReducer, initialState);
   const [targetSearchInput, setTargetSearchInput] = useState("");
   const [targetSearchData, setTargetSearchData] = useState([]);
-  const [deleteInput,setDeleteInput]=useState("")
-  let defaultApi = "name";
-  const fetchData = async (key) => {
+  const [deleteInput, setDeleteInput] = useState("");
+  let defaultRow = [
+    {
+      id: 1,
+      col1: "",
+      col2: "",
+      col3: "",
+      col4: "查無資料",
+      col5: "",
+      col6: "",
+      col7: "",
+      col8: "",
+    },
+  ];
+  const fetchData = async () => {
     const {
       loading: queryLoading,
       errors,
@@ -58,47 +97,42 @@ function App() {
       query: gql`
         query {
           userdata {
-            ${key}
+            dataId
+            id
+            name
+            email
+            workplace
+            worktitle
+            address
+            tel
+            mobilephone
           }
         }
       `,
     });
-    // console.log(errors)
     let datalength = data.userdata.length;
-    let dealedData = data.userdata.slice(datalength - 5, datalength);
-    setData(dealedData);
-    // setData(data.userdata)
+    let dealedData = data.userdata.slice(datalength - 6, datalength);
+    setData(()=>dealedData);
     setLoading(queryLoading);
     setError(errors);
   };
 
-  const handleInputValue = (event) => {
-    setInputValue(event.target.value);
-  };
-
-  const handleAPI = (event) => {
-    event.preventDefault();
-    if (inputValue === "") return;
-    setLoading(true);
-    fetchData(inputValue);
-  };
-
   useEffect(() => {
-    fetchData(defaultApi);
-  }, [defaultApi]);
+    fetchData();
+  }, []);
 
   const ADD_USER_MUTATION = gql`
     mutation addUser($userInput: UserInput!) {
       addUser(userInput: $userInput)
     }
   `;
-  const [addUserMutation, { sendLoading, sendDataError, sendData }] =
-    useMutation(ADD_USER_MUTATION, {
-      onCompleted: (data) => {
-        console.log(data);
-        alert("成功新增資料"); // 成功回應資料
-      },
-    });
+  // const [addUserMutation, { sendLoading, sendDataError, sendData }] =
+  const [addUserMutation] = useMutation(ADD_USER_MUTATION, {
+    onCompleted: (data) => {
+      // console.log(data);
+      alert("成功新增資料"); // 成功回應資料
+    },
+  });
 
   const handleFormSubmit = (event, formState) => {
     event.preventDefault();
@@ -138,7 +172,6 @@ function App() {
         query: SEARCH_USERS_QUERY,
         variables: { searchTerm },
       });
-      // console.log(data.searchUsers);
       setTargetSearchData(data.searchUsers);
     } catch (error) {
       console.error(error);
@@ -157,33 +190,31 @@ function App() {
     // console.log(targetSearchData)
   };
   const DELETE_USER_MUTATION = gql`
-  mutation DeleteUser($deleteUserId: String!) {
-    deleteUser(id: $deleteUserId)
-  }
-  
-`;
-const [deleteUserMutation] =
-useMutation(DELETE_USER_MUTATION, {
-  onCompleted: (data) => {
-    console.log(data);
-    alert("成功刪除資料"); // 成功回應資料
-  },
-});
-
-  const handledelete =(event,value)=>{
-  if(value==="") return
-  event.preventDefault()
-  deleteUserMutation({
-    variables: {
-      deleteUserId: value,
+    mutation DeleteUser($deleteUserId: String!) {
+      deleteUser(id: $deleteUserId)
+    }
+  `;
+  const [deleteUserMutation] = useMutation(DELETE_USER_MUTATION, {
+    onCompleted: (data) => {
+      console.log(data);
+      alert("成功刪除資料"); // 成功回應資料
     },
-  })
-    .then((result) => console.log(result))
-    .catch((error) => console.error(error));
-  }
-  const handleDeleteInput = (event)=>{
-  setDeleteInput(event.target.value)
-  }
+  });
+
+  const handledelete = (event, value) => {
+    if (value === "") return;
+    event.preventDefault();
+    deleteUserMutation({
+      variables: {
+        deleteUserId: value,
+      },
+    })
+      .then((result) => console.log(result))
+      .catch((error) => console.error(error));
+  };
+  const handleDeleteInput = (event) => {
+    setDeleteInput(event.target.value);
+  };
 
   return (
     <div
@@ -194,15 +225,9 @@ useMutation(DELETE_USER_MUTATION, {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: "20px",
-
       }}
     >
       <h1>向資料庫要資料並顯示</h1>
-      <form onSubmit={handleAPI}>
-        <input value={inputValue} onChange={handleInputValue} />
-        <button>Search</button>
-      </form>
-
       {loading ? (
         <div
           className="loading-container"
@@ -219,17 +244,44 @@ useMutation(DELETE_USER_MUTATION, {
         </div>
       ) : (
         <div style={{ textAlign: "center" }}>
-          {resultdata.map((each, index) => {
-            for (let key in each) {
-              if (key === "__typename") continue;
-              return <h1 key={`${each[key]}${index}77`}>{each[key]}</h1>;
-            }
-          })}
+          {/* {resultdata.map((each, index) => {
+            console.log(each);
+            return (
+              <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+                {each.dataId && <p>資料庫id:{each.dataId}</p>}
+                {each.id && <p>id:{each.id}</p>}
+                {each.name && <p>name:{each.name}</p>}
+                {each.email && <p>email:{each.email}</p>}
+                {each.workplace && <p>workplace:{each.workplace}</p>}
+                {each.workplace && <p>worktitle:{each.worktitle}</p>}
+                {each.address && <p>address:{each.address}</p>}
+                {each.tel && <p>tel:{each.tel}</p>}
+                {each.tel && <p>mobilephone:{each.mobilephone}</p>}
+              </div>
+            );
+          })} */}
+          <DataGrid
+            slots={{ toolbar: CustomToolBar }}
+            sx={{
+              m: 3,
+              fontWeight: "400",
+              fontSize: "16px",
+              boxShadow: 2,
+              border: 2,
+              borderColor: "silver",
+              "& .MuiDataGrid-cell:hover": {
+                color: "primary.main",
+              },
+            }}
+            density="compact"
+            rows={createRow(resultdata).length ? createRow(resultdata) : defaultRow}
+            columns={createColumns(resultdata)}
+          />
         </div>
       )}
 
       {error && <p>Error {error.message}</p>}
-      <div style={{ position: "absolute", top: "70vh", width: "300px" }}>
+      <div style={{ position: "absolute", top: "90vh", width: "300px" }}>
         <form onSubmit={(event) => handleFormSubmit(event, formState)}>
           <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -309,7 +361,7 @@ useMutation(DELETE_USER_MUTATION, {
               width: "300px",
               display: "flex",
               justifyContent: "center",
-              paddingTop:"20px"
+              paddingTop: "20px",
             }}
           >
             <button>送出</button>
@@ -321,9 +373,9 @@ useMutation(DELETE_USER_MUTATION, {
           display: "flex",
           alignItems: "center",
           position: "absolute",
-          top: "115vh",
+          top: "145vh",
           width: "300px",
-          minHeight:"300px",
+          minHeight: "300px",
           flexDirection: "column",
         }}
       >
@@ -336,11 +388,11 @@ useMutation(DELETE_USER_MUTATION, {
           <input value={targetSearchInput} onChange={handleTargetSearch} />
           <button>查找</button>
           {targetSearchData.map((each, index) => {
-            console.log(each)
+            console.log(each);
             return (
               <div
                 style={{
-                  paddingBottom:"150px",
+                  paddingBottom: "140px",
                   backgroundColor: index % 2 === 0 ? "white" : "silver",
                 }}
                 key={`${index}${each}${index}`}
@@ -359,30 +411,25 @@ useMutation(DELETE_USER_MUTATION, {
           })}
         </form>
         <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          position: "fixed",
-          bottom:"10px",
-          width: "300px",
-          flexDirection: "column",
-          backgroundColor:"pink",
-          paddingBottom:"40px",
-          height:"100px"
-        }}
-      >
-        <h1>刪除區塊</h1>
-        <form
-          onSubmit={(event) =>
-            handledelete(event,deleteInput)
-          }
+          style={{
+            display: "flex",
+            alignItems: "center",
+            position: "fixed",
+            bottom: "10px",
+            width: "300px",
+            flexDirection: "column",
+            backgroundColor: "pink",
+            paddingBottom: "40px",
+            height: "100px",
+          }}
         >
-          <input value={deleteInput} onChange={handleDeleteInput}/>
-          <button>刪除</button>
-        </form>
+          <h1>刪除區塊</h1>
+          <form onSubmit={(event) => handledelete(event, deleteInput)}>
+            <input value={deleteInput} onChange={handleDeleteInput} />
+            <button>刪除</button>
+          </form>
+        </div>
       </div>
-      </div>
-  
     </div>
   );
 }
