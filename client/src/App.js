@@ -2,7 +2,7 @@ import React from "react";
 import UsersDataForm from "./components/UsersDataForm";
 import AddDataPart from "./components/AddDataPart";
 import SearchPartandDeletePart from "./components/SeachPart";
-
+import UpdateDataPart from "./components/UpdateDataPart";
 function App() {
   return (
     <div
@@ -17,6 +17,7 @@ function App() {
     >
       <UsersDataForm />
       <AddDataPart />
+      <UpdateDataPart/>
       <SearchPartandDeletePart />
     </div>
   );

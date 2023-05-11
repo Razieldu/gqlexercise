@@ -11,4 +11,22 @@ mutation DeleteUser($deleteUserId: String!) {
 }
 `;
 
+export const UPDATE_USER_MUTATION = gql`
+mutation UpdateUser($dataId: String!, $updateUserInput: UpdateUserInput!) {
+  updateUserData(dataId: $dataId, UpdateUserInput: $updateUserInput) {
+    dataId
+    id
+    name
+    email
+    workplace
+    worktitle
+    address
+    tel
+    mobilephone  
+  },
+}
+
+
+
+`
 

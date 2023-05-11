@@ -94,9 +94,28 @@ async function deleteUser(id, databaseName, collectionName) {
   }
 }
 
+async function updateUser(id, databaseName, collectionName,updateObj) {
+  let updateResult
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const _id = new ObjectId(id);
+    updateResult = await collection.updateOne({ _id: _id }, { $set: updateObj });
+    
+    console.log(`${updateResult.modifiedCount} document updated.`);
+  } catch (error) {
+    console.error(error);
+  }finally{
+    client.close(); // 關閉連線
+  }
+  return updateResult
+}
+
 module.exports = {
   getUsers,
   searchUser,
   deleteUser,
-  addUser
+  addUser,
+  updateUser
 };

@@ -35,6 +35,7 @@ type User {
 type Mutation {
   addUser(userInput: UserInput!): String
   deleteUser(id: String!): String
+  updateUserData(dataId:String!,UpdateUserInput: UpdateUserInput!):User
 }
 
 input UserInput {
@@ -46,6 +47,18 @@ input UserInput {
   address: String!
   tel: String!
   mobilephone: String!
+}
+
+input UpdateUserInput {
+  id: String
+  dataId:String
+  name: String
+  email: String
+  workplace: String
+  worktitle: String
+  address: String
+  tel: String
+  mobilephone: String
 }
 `
 

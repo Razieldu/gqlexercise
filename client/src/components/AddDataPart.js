@@ -1,4 +1,4 @@
-import CustomInputReducer from "../customs/InputHandleReducer";
+import CustomInputReducer from "../customs/CustomAddInputReducer";
 import { ADD_USER_MUTATION } from "../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
 
@@ -53,7 +53,7 @@ const AddDataPart = () => {
         <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
         {labels.map((eachLabel, index) => {
           return (
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div key={`${types[index]}_${labels[index]}`} style={{ display: "flex", justifyContent: "space-between" }}>
               <label>{eachLabel}</label>
               <input
                 onChange={(e) =>
