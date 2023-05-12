@@ -68,11 +68,12 @@ const SearchPartandDeletePart = () => {
         display: "flex",
         alignItems: "center",
         position: "absolute",
-        top: "190vh",
+        top: "195vh",
         width: "500px",
         minHeight: "300px",
         flexDirection: "column",
         gap: "10px",
+        
       }}
     >
       <h1>查詢符合條件的資料</h1>
