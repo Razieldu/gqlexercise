@@ -48,7 +48,7 @@ const AddDataPart = () => {
     "mobilephone",
   ];
   return (
-    <div style={{ position: "absolute", top: "70vh", width: "300px" }}>
+    <div style={{ position: "absolute", top: "100vh", width: "300px" }}>
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
         <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
         {labels.map((eachLabel, index) => {

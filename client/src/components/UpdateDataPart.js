@@ -49,7 +49,7 @@ const UpdateDataPart = () => {
   };
 
   return (
-    <div style={{ position: "absolute", top: "120vh", width: "300px" }}>
+    <div style={{ position: "absolute", top: "145vh", width: "300px" }}>
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
         <h1 style={{ textAlign: "center" }}>更新資料</h1>
         {labels.map((eachLabel, index) => {

@@ -3,7 +3,6 @@ import {useState, useContext,useCallback } from "react";
 // import client from "../apollo.js";
 import DeletePart from "./DeletePart";
 import MyInput from "./MyInput";
-// import debounce from "lodash.debounce";
 import { throttle } from 'lodash';
 import { handleSearchDataContext } from "../store/handleSearchContextApi";
 const SearchPartandDeletePart = () => {
@@ -69,7 +68,7 @@ const SearchPartandDeletePart = () => {
         display: "flex",
         alignItems: "center",
         position: "absolute",
-        top: "165vh",
+        top: "190vh",
         width: "500px",
         minHeight: "300px",
         flexDirection: "column",
