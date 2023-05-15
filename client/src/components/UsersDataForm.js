@@ -71,7 +71,7 @@ const UsersDataForm = () => {
       style={{
         position: "relative",
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         flexDirection: "column",
         height:"90vh"
@@ -88,7 +88,8 @@ const UsersDataForm = () => {
             alignItems: "center",
             position: "absolute",
             zIndex: "100",
-            top: "50%",
+            paddingTop:`${loading?"200px":"0px"}`,
+            top: "-30%",
           }}
         >
           <BarLoader color="#36D7B7" loading={loading} />
