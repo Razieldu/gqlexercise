@@ -28,22 +28,23 @@ const MyInput = (props) => {
   return (
     <div
       style={{
-        padding:"40px 40px 140px 40px ",
+        padding:"40px",
+        width:"300px",
         backgroundColor: props.index % 2 === 0 ? "white" : "silver",
       }}
       key={`${props.index}div${props.index}`}
     >
 
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        <div>資料庫id:{props.each.dataId}</div>
+        <div>資料庫id : {props.each.dataId}</div>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        <div>id:{props.each.id}</div>
+        <div>id : {props.each.id}</div>
       </div>
       {keysArray.map((one, index) => {
         let every = props.each;
         return (
-          <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <div key={`updatePart${index}`} style={{ display: "flex", justifyContent: "flex-start" }}>
             <div>{`${one}:`}</div>
             {!inputShow[index] && (
               <div

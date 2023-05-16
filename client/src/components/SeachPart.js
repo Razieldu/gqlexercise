@@ -1,9 +1,9 @@
-import {useState, useContext,useCallback } from "react";
+import { useState, useContext, useCallback } from "react";
 // import { SEARCH_USERS_QUERY } from "../GQL/query/query";
 // import client from "../apollo.js";
 import DeletePart from "./DeletePart";
 import MyInput from "./MyInput";
-import { throttle } from 'lodash';
+import { throttle } from "lodash";
 import { handleSearchDataContext } from "../store/handleSearchContextApi";
 const SearchPartandDeletePart = () => {
   const [targetSearchInput, setTargetSearchInput] = useState("");
@@ -36,8 +36,8 @@ const SearchPartandDeletePart = () => {
   };
 
   const throttleInputChangeHandle = useCallback(
-   throttle((updateObject, dataId) => {
-      console.log(updateObject,dataId)
+    throttle((updateObject, dataId) => {
+      console.log(updateObject, dataId);
       ctx.updateDateBaseFn(updateObject, dataId);
     }, 10000),
     []
@@ -53,7 +53,7 @@ const SearchPartandDeletePart = () => {
           let tempObj = ctx.searchDataValue[i];
           if (keykey === "id" && tempObj[keykey] === id) {
             updateObject = { ...tempObj, [key]: changeValue };
-            delete updateObject.__typename
+            delete updateObject.__typename;
             readyToUpdateArray[i] = updateObject;
             throttleInputChangeHandle(updateObject, dataId);
             return readyToUpdateArray;
@@ -73,7 +73,6 @@ const SearchPartandDeletePart = () => {
         minHeight: "300px",
         flexDirection: "column",
         gap: "10px",
-        
       }}
     >
       <h1>查詢符合條件的資料</h1>
@@ -86,16 +85,25 @@ const SearchPartandDeletePart = () => {
           <input value={targetSearchInput} onChange={handleTargetSearch} />
           <button>查找</button>
         </div>
-
-        {ctx.searchDataValue.map((each, index) => {
-          return (
-            <MyInput
-              each={each}
-              index={index}
-              handleChange={inputChangeHandle}
-            />
-          );
-        })}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              ctx.searchDataValue.length === 1 ? "1fr" : "1fr 1fr 1fr",
+            paddingTop: "40px",
+          }}
+        >
+          {ctx.searchDataValue.map((each, index) => {
+            return (
+              <MyInput
+                key={each.dataId}
+                each={each}
+                index={index}
+                handleChange={inputChangeHandle}
+              />
+            );
+          })}
+        </div>
       </form>
       <DeletePart />
     </div>
