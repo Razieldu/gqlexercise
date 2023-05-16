@@ -1,9 +1,11 @@
+
 import React from "react";
-import UsersDataForm from "./components/UsersDataForm";
-import AddDataPart from "./components/AddDataPart";
-import SearchPartandDeletePart from "./components/SeachPart";
-import UpdateDataPart from "./components/UpdateDataPart";
-function App() {
+import UsersDataForm from "../components/UsersDataForm";
+import AddDataPart from "../components/AddDataPart";
+import SearchPartandDeletePart from "../components/SeachPart";
+import UpdateDataPart from "../components/UpdateDataPart";
+
+const HomePage = ()=>{
   return (
     <div
       style={{
@@ -22,5 +24,4 @@ function App() {
     </div>
   );
 }
-
-export default App;
+export default HomePage
