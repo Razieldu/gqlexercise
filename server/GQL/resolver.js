@@ -4,11 +4,16 @@ const {
   addUser,
   deleteUser,
   updateUser,
+  registerUser
 } = require("../methods/method");
 
 const resolvers = {
   Query: {
-    hello: () => "Hello World!",
+    // users: async () => {
+    //     const collection = db.collection('userData');
+    //     const users = await collection.find().toArray();
+    //     return users;
+    //   },
     userdata: async () => {
       try {
         const users = await getUsers("usersData", "Data");
@@ -43,13 +48,13 @@ const resolvers = {
     addUser: (_, args) => addUser(args.userInput, "usersData", "Data"),
     deleteUser: (_, { id }) => deleteUser(id, "usersData", "Data"),
     updateUserData: async (_, { dataId, UpdateUserInput }) => {
-      console.log(UpdateUserInput)
-      console.log(dataId)
-      for(let key in UpdateUserInput){
-          if(UpdateUserInput[key]==="") delete UpdateUserInput[key]
+      console.log(UpdateUserInput);
+      console.log(dataId);
+      for (let key in UpdateUserInput) {
+        if (UpdateUserInput[key] === "") delete UpdateUserInput[key];
       }
       const updateObj = { ...UpdateUserInput };
-      console.log(updateObj)
+      console.log(updateObj);
       // delete updateObj.id; // 移除 id 屬性，因為我們使用 dataId 屬性作為查找條件
       try {
         await updateUser(dataId, "usersData", "Data", updateObj);
@@ -59,6 +64,33 @@ const resolvers = {
         return false;
       }
     },
+    register: async (_, { username, password }) => {
+     let data= {username,password}
+     try {
+      const token = await registerUser(data, "userAccountData", "userNamePasswordData");
+      console.log(token)
+      return token ;
+     } catch (error) {
+       console.error(error);
+     }
+    },
+    // login: async (_, { username, password }) => {
+    //   const user = await mongoose.connection
+    //     .collection("userData")
+    //     .findOne({ username });
+    //   if (!user) {
+    //     throw new Error("Invalid username or password");
+    //   }
+
+    //   const isPasswordValid = await bcrypt.compare(password, user.password);
+    //   if (!isPasswordValid) {
+    //     throw new Error("Invalid username or password");
+    //   }
+
+    //   const token = jwt.sign({ username }, "your-secret-key");
+
+    //   return { token };
+    // },
   },
 };
 

@@ -25,8 +25,14 @@ mutation UpdateUser($dataId: String!, $updateUserInput: UpdateUserInput!) {
     mobilephone  
   },
 }
-
-
-
 `
+export const REGISTER_USER = gql`
+  mutation RegisterUser($username: String!, $password: String!) {
+    register(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
+
 

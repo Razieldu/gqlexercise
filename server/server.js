@@ -1,6 +1,7 @@
 
 const { typeDefs } = require("./GQL/typedef");
 const{resolvers} =require("./GQL/resolver")
+
 const express = require("express");
 const { ApolloServer} = require("apollo-server-express");
 // const fs = require('fs');

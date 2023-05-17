@@ -68,7 +68,7 @@ const SearchPartandDeletePart = () => {
         display: "flex",
         alignItems: "center",
         position: "absolute",
-        top: "195vh",
+        top: "205vh",
         width: "500px",
         minHeight: "300px",
         flexDirection: "column",

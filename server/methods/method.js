@@ -1,5 +1,7 @@
 require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const uri = process.env.DB_HOST;
 
@@ -94,22 +96,59 @@ async function deleteUser(id, databaseName, collectionName) {
   }
 }
 
-async function updateUser(id, databaseName, collectionName,updateObj) {
-  let updateResult
+async function updateUser(id, databaseName, collectionName, updateObj) {
+  let updateResult;
   try {
     await client.connect();
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
     const _id = new ObjectId(id);
-    updateResult = await collection.updateOne({ _id: _id }, { $set: updateObj });
-    
+    updateResult = await collection.updateOne(
+      { _id: _id },
+      { $set: updateObj }
+    );
+
     console.log(`${updateResult.modifiedCount} document updated.`);
   } catch (error) {
     console.error(error);
-  }finally{
+  } finally {
     client.close(); // 關閉連線
   }
-  return updateResult
+  return updateResult;
+}
+
+async function registerUser(userInfo, databaseName, collectionName) {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    
+    // 检查用户名是否已存在
+    const existingUser = await collection.findOne({ username: userInfo.username });
+    if (existingUser) {
+      console.log('用户名已存在');
+      return { token: null }; // 如果用户名已存在，停止注册流程并返回 null
+    }
+
+    let newUserData = userInfo
+    // 对密码进行哈希加密
+    const hashedPassword = await bcrypt.hash(newUserData.password, 10);
+
+    // 替换原始密码为哈希值
+    newUserData.password = hashedPassword;
+
+    const result = await collection.insertOne(userInfo);
+    console.log(`User with id ${result.insertedId} has been added to the database.`);
+    const token = jwt.sign({ username: userInfo.username }, 'userLoginKey');
+    
+    // 返回符合 AuthPayload 类型的对象
+    return { token };
+ 
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await client.close();
+  }
 }
 
 module.exports = {
@@ -117,5 +156,6 @@ module.exports = {
   searchUser,
   deleteUser,
   addUser,
-  updateUser
+  updateUser,
+  registerUser,
 };

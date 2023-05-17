@@ -2,10 +2,20 @@ const { gql } = require("apollo-server-express");
 
 
 const typeDefs = gql`
+type LoginUser {
+  id: ID!
+  username: String!
+}
+
+type AuthPayload {
+  token: String
+}
+
 type Query {
   hello: String
   userdata: [Data]
   searchUsers(searchTerm: String!): [User]
+  users: [LoginUser!]!
 }
 
 type Data {
@@ -36,6 +46,8 @@ type Mutation {
   addUser(userInput: UserInput!): String
   deleteUser(id: String!): String
   updateUserData(dataId:String!,UpdateUserInput: UpdateUserInput!):User
+  register(username: String!, password: String!): AuthPayload!
+  login(username: String!, password: String!): AuthPayload!
 }
 
 input UserInput {
