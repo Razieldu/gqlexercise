@@ -27,17 +27,27 @@ export const UPDATE_USER_MUTATION = gql`
   }
 `;
 export const REGISTER_USER = gql`
-  mutation RegisterUser($username: String!, $password: String!) {
-    register(username: $username, password: $password) {
+mutation Register($username: String!, $password: String!) {
+  register(username: $username, password: $password) {
+    token {
       token
     }
+    message {
+      message
+    }
   }
+}
 `;
 
 export const LOGIN_USER = gql`
-  mutation Login($password: String!, $username: String!) {
-    login(password: $password, username: $username) {
-      token
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      token {
+        token
+      }
+      message {
+        message
+      }
     }
   }
 `;

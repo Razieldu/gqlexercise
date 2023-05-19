@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const uri = process.env.DB_HOST;
 
@@ -123,28 +123,38 @@ async function registerUser(userInfo, databaseName, collectionName) {
     await client.connect();
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
-    
+
     // 检查用户名是否已存在
-    const existingUser = await collection.findOne({ username: userInfo.username });
+    const existingUser = await collection.findOne({
+      username: userInfo.username,
+    });
     if (existingUser) {
-      console.log('用户名已存在');
-      return { token: null }; // 如果用户名已存在，停止注册流程并返回 null
+      console.log("用户名已存在");
+      return { token: null, message: { message: "用戶名已存在" } }; // 如果用户名已存在，停止注册流程并返回 null
     }
 
-    let newUserData = {...userInfo}
+    let newUserData = { ...userInfo };
+    let { username, password } = newUserData;
     // 对密码进行哈希加密
-    const hashedPassword = await bcrypt.hash(newUserData.password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // 替换原始密码为哈希值
     newUserData.password = hashedPassword;
 
     const result = await collection.insertOne(newUserData);
-    console.log(`User with id ${result.insertedId} has been added to the database.`);
-    const token = jwt.sign({ username: userInfo.username }, 'userLoginKey');
-    
+    console.log(
+      `User with id ${result.insertedId} has been added to the database.`
+    );
+
+    const token = {
+      token: jwt.sign({ username }, "userLoginKey"),
+    };
+    const message = {
+      message: "登入成功",
+    };
+
     // 返回符合 AuthPayload 类型的对象
-    return { token };
- 
+    return { token, message };
   } catch (error) {
     console.error(error);
   } finally {
@@ -152,41 +162,43 @@ async function registerUser(userInfo, databaseName, collectionName) {
   }
 }
 ///登入
-async function loginUser(userInfo,databaseName, collectionName) {
+async function loginUser(userInfo, databaseName, collectionName) {
   try {
     await client.connect();
     const database = client.db(databaseName);
     const collection = database.collection(collectionName);
-    
-    const { password,username} = userInfo
+
+    const { password, username } = userInfo;
     // 檢查使用者名稱是否存在
-    const existingUser = await collection.findOne({username});
+    const existingUser = await collection.findOne({ username });
     if (!existingUser) {
-      console.log('使用者名稱不存在');
-      return { token: null }; // 使用者名稱不存在，返回 null
+      console.log("使用者名稱不存在");
+      return { token: null, message: { message: "使用者名稱不存在" } }; // 使用者名稱不存在，返回 null
     }
 
     // 對比密碼
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
     if (!passwordMatch) {
-      console.log('密碼不正確');
-      return { token: null }; // 密碼不正確，返回 null
+      console.log("密碼不正確");
+      return { token: null, message: { message: "密碼不正確" } }; // 密碼不正確，返回 null
     }
 
     // 生成 JWT Token
-    const token = jwt.sign({ username }, 'userLoginKey');
-    
+    const token = {
+      token: jwt.sign({ username }, "userLoginKey"),
+    };
+    const message = {
+      message: "登入成功",
+    };
+
     // 返回 Token
-    return { token };
- 
+    return { token, message };
   } catch (error) {
     console.error(error);
   } finally {
     await client.close();
   }
 }
-
-
 
 module.exports = {
   getUsers,
@@ -195,5 +207,5 @@ module.exports = {
   addUser,
   updateUser,
   registerUser,
-  loginUser
+  loginUser,
 };

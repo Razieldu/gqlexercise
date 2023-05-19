@@ -7,8 +7,18 @@ type LoginUser {
   username: String!
 }
 
-type AuthPayload {
+type Token {
   token: String
+}
+
+type Message {
+  message: String
+}
+
+
+type AuthPayload {
+  token: Token
+  message: Message
 }
 
 type Query {

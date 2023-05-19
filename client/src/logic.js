@@ -63,7 +63,7 @@ export const createRow = (data) => {
         // col14: `${contentData[i][13]}`,
       });
     }
-    console.log(resultRow)
+    // console.log(resultRow)
     return resultRow;
   };
 
