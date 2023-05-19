@@ -12,7 +12,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import { useMutation } from "@apollo/client";
+import { LOGIN_USER } from "../GQL/mutation/mutations";
+import { useNavigate } from "react-router-dom";
+import {userAccountContextAPi} from "../store/handleUserAccountContextApi"
 function Copyright(props) {
   return (
     <Typography
@@ -34,15 +37,38 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
+  let navigate = useNavigate();
+  const ctx = React.useContext(userAccountContextAPi)
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+    const userData = new FormData(event.currentTarget);
+    try {
+      const { data } = await loginUser({
+        variables: {
+          username: userData.get("email"),
+          password: userData.get("password"),
+        },
+      });
+      console.log(data);
+      if (data?.login?.token === null) {
+        alert("用户名不存在，请前往註冊頁面。");
+        navigate("/");
+      } else {
+        const token = data?.login?.token;
+        // console.log(token);
+        ctx.setToken(token)
+        console.log(ctx.token)
+        navigate("/home");
+      }
+    } catch (error) {
+      // 处理注册失败的错误
+      console.error(error);
 
+      // 显示具体的错误信息
+      console.log("注册失败:", error.message);
+    }
+  };
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -97,7 +123,7 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              登入
+              {loading ? "登入中..." : "登入"}
             </Button>
             <Grid container>
               <Grid item xs>

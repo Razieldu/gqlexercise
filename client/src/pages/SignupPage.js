@@ -15,6 +15,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/client";
 import { REGISTER_USER } from "../GQL/mutation/mutations";
 import { useNavigate } from "react-router-dom";
+import {userAccountContextAPi} from "../store/handleUserAccountContextApi"
+
 
 function Copyright(props) {
   return (
@@ -39,7 +41,8 @@ const theme = createTheme();
 export default function SignUp() {
   const [registerUser, { loading, error }] = useMutation(REGISTER_USER);
   let navigate = useNavigate();
-const handleSubmit = async (event) => {
+  const ctx = React.useContext(userAccountContextAPi)
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
     try {
@@ -49,37 +52,32 @@ const handleSubmit = async (event) => {
           password: userData.get("password"),
         },
       });
-  
-      console.log(data)
+
+      console.log(data);
       if (data?.register?.token === null) {
         // 注册失败，用户名已存在
-        console.log('用户名已存在，请使用其他用户名。');
+        alert("用户名已存在，请使用其他用户名。");
       } else {
         // 注册成功，处理返回的 token 数据
         const token = data?.register?.token;
         // 执行您希望的操作，例如保存 token 到本地存储、跳转到其他页面等
+        ctx.setToken(token)
         navigate("/home");
-        console.log(token);
+        console.log(ctx.token);
       }
     } catch (error) {
       // 处理注册失败的错误
       console.error(error);
-  
+
       // 显示具体的错误信息
-      console.log('注册失败:', error.message);
+      console.log("注册失败:", error.message);
     }
-  
+
     console.log({
       email: userData.get("email"),
       password: userData.get("password"),
     });
   };
-  
-  
-  // ...
-  
-  
-  
 
   return (
     <ThemeProvider theme={theme}>
@@ -99,6 +97,7 @@ const handleSubmit = async (event) => {
           <Typography component="h1" variant="h5">
             註冊
           </Typography>
+
           <Box
             component="form"
             noValidate
@@ -142,7 +141,7 @@ const handleSubmit = async (event) => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              註冊
+              {loading ? "註冊中..." : "註冊"}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

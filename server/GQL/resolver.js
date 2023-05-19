@@ -4,7 +4,8 @@ const {
   addUser,
   deleteUser,
   updateUser,
-  registerUser
+  registerUser,
+  loginUser
 } = require("../methods/method");
 
 const resolvers = {
@@ -74,23 +75,16 @@ const resolvers = {
        console.error(error);
      }
     },
-    // login: async (_, { username, password }) => {
-    //   const user = await mongoose.connection
-    //     .collection("userData")
-    //     .findOne({ username });
-    //   if (!user) {
-    //     throw new Error("Invalid username or password");
-    //   }
-
-    //   const isPasswordValid = await bcrypt.compare(password, user.password);
-    //   if (!isPasswordValid) {
-    //     throw new Error("Invalid username or password");
-    //   }
-
-    //   const token = jwt.sign({ username }, "your-secret-key");
-
-    //   return { token };
-    // },
+    login: async (_, { username, password }) => {
+    let data = {username,password}
+    try {
+      const token = await loginUser(data, "userAccountData", "userNamePasswordData");
+      console.log(token)
+      return token ;
+     } catch (error) {
+       console.error(error);
+     }
+    },
   },
 };
 

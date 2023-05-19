@@ -117,6 +117,7 @@ async function updateUser(id, databaseName, collectionName, updateObj) {
   return updateResult;
 }
 
+///註冊
 async function registerUser(userInfo, databaseName, collectionName) {
   try {
     await client.connect();
@@ -130,14 +131,14 @@ async function registerUser(userInfo, databaseName, collectionName) {
       return { token: null }; // 如果用户名已存在，停止注册流程并返回 null
     }
 
-    let newUserData = userInfo
+    let newUserData = {...userInfo}
     // 对密码进行哈希加密
     const hashedPassword = await bcrypt.hash(newUserData.password, 10);
 
     // 替换原始密码为哈希值
     newUserData.password = hashedPassword;
 
-    const result = await collection.insertOne(userInfo);
+    const result = await collection.insertOne(newUserData);
     console.log(`User with id ${result.insertedId} has been added to the database.`);
     const token = jwt.sign({ username: userInfo.username }, 'userLoginKey');
     
@@ -150,6 +151,42 @@ async function registerUser(userInfo, databaseName, collectionName) {
     await client.close();
   }
 }
+///登入
+async function loginUser(userInfo,databaseName, collectionName) {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    
+    const { password,username} = userInfo
+    // 檢查使用者名稱是否存在
+    const existingUser = await collection.findOne({username});
+    if (!existingUser) {
+      console.log('使用者名稱不存在');
+      return { token: null }; // 使用者名稱不存在，返回 null
+    }
+
+    // 對比密碼
+    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+    if (!passwordMatch) {
+      console.log('密碼不正確');
+      return { token: null }; // 密碼不正確，返回 null
+    }
+
+    // 生成 JWT Token
+    const token = jwt.sign({ username }, 'userLoginKey');
+    
+    // 返回 Token
+    return { token };
+ 
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await client.close();
+  }
+}
+
+
 
 module.exports = {
   getUsers,
@@ -158,4 +195,5 @@ module.exports = {
   addUser,
   updateUser,
   registerUser,
+  loginUser
 };
