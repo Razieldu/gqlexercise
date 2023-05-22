@@ -45,6 +45,10 @@ export default function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
+    if(!userData.get("email").includes("@")){
+      alert("請輸入有效電子郵件")
+      return
+    }
     try {
       const { data } = await loginUser({
         variables: {
