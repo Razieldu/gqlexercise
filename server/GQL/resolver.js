@@ -29,9 +29,9 @@ const resolvers = {
       }
     },
     searchUsers: async (_, { searchTerm }, context) => {
-      if (context.user!=="s202032808@gmail.com") {
-          throw new Error("您非網站管理者")
-      }
+      // if (context.user!=="s202032808@gmail.com") {
+      //     throw new Error("您非網站管理者,請洽詢管理員")
+      // }
       try {
         const users = await searchUser(searchTerm, "usersData", "Data");
         return users.map((user) => ({ ...user, dataId: user._id.toString() }));
@@ -48,10 +48,23 @@ const resolvers = {
     // }
   },
   Mutation: {
-    addUser: (_, args) => addUser(args.userInput, "usersData", "Data"),
-    deleteUser: (_, { id }) => deleteUser(id, "usersData", "Data"),
-    updateUserData: async (_, { dataId, UpdateUserInput }) => {
+    addUser: (_, args, context) => {
+      if (context.user !== "s202032808@gmail.com") {
+        throw new Error("您非網站管理者,請洽詢管理員");
+      }
+      addUser(args.userInput, "usersData", "Data");
+    },
+    deleteUser: (_, { id }, context) => {
+      if (context.user !== "s202032808@gmail.com") {
+        throw new Error("您非網站管理者,請洽詢管理員");
+      }
+      deleteUser(id, "usersData", "Data");
+    },
+    updateUserData: async (_, { dataId, UpdateUserInput }, context) => {
       console.log(UpdateUserInput);
+      if (context.user !== "s202032808@gmail.com") {
+        throw new Error("您非網站管理者,請洽詢管理員");
+      }
       console.log(dataId);
       for (let key in UpdateUserInput) {
         if (UpdateUserInput[key] === "") delete UpdateUserInput[key];

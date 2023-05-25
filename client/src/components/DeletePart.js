@@ -1,8 +1,6 @@
-import { useState} from "react";
+import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import {
-  DELETE_USER_MUTATION,
-} from "../GQL/mutation/mutations";
+import { DELETE_USER_MUTATION } from "../GQL/mutation/mutations";
 
 const DeletePart = () => {
   const [deleteInput, setDeleteInput] = useState("");
@@ -18,7 +16,10 @@ const DeletePart = () => {
       },
     })
       .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error.message);
+        alert(error.message);
+      });
   };
 
   const [deleteUserMutation] = useMutation(DELETE_USER_MUTATION, {
@@ -35,7 +36,7 @@ const DeletePart = () => {
         alignItems: "center",
         position: "fixed",
         bottom: "10px",
-        right:"0px",
+        right: "0px",
         width: "300px",
         flexDirection: "column",
         backgroundColor: "pink",

@@ -2,7 +2,7 @@ import CustomUpdateInputReducer from "../customs/CustomUpdateInputReducer";
 import { useMutation } from "@apollo/client";
 import { UPDATE_USER_MUTATION } from "../GQL/mutation/mutations";
 const UpdateDataPart = () => {
-  const[formState,dispatchFn] =CustomUpdateInputReducer()
+  const [formState, dispatchFn] = CustomUpdateInputReducer();
   let labels = [
     "資料庫id",
     "單位",
@@ -32,24 +32,34 @@ const UpdateDataPart = () => {
     },
   });
 
-
   const handleFormSubmit = (event, formState) => {
     event.preventDefault();
-    console.log(formState)
+    console.log(formState);
     dispatchFn({ type: "reset" });
     updateUserMutation({
       variables: {
         updateUserInput: formState,
-        dataId:formState.dataId
+        dataId: formState.dataId,
       },
     })
       .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error.message);
+        alert(error.message);
+      });
     console.log(formState);
   };
 
   return (
-    <div style={{ position: "absolute", top: "175vh", width: "300px",backgroundColor:"silver",padding:"20px" }}>
+    <div
+      style={{
+        position: "absolute",
+        top: "175vh",
+        width: "300px",
+        backgroundColor: "silver",
+        padding: "20px",
+      }}
+    >
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
         <h1 style={{ textAlign: "center" }}>更新資料</h1>
         {labels.map((eachLabel, index) => {

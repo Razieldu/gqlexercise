@@ -13,7 +13,7 @@ const tokenVerify = async ({ req }) => {
     } catch (error) {
       console.log("JWT 驗證失敗：", error);
     }
-    console.log(user)
+    // console.log(user)
     return { user };
   };
   

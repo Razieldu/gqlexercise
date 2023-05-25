@@ -52,6 +52,7 @@ type User {
   mobilephone: String
 }
 
+
 type Mutation {
   addUser(userInput: UserInput!): String
   deleteUser(id: String!): String

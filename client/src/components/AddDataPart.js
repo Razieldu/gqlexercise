@@ -23,7 +23,10 @@ const AddDataPart = () => {
       },
     })
       .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error.message);
+        alert(error.message);
+      });
     // console.log(formState);
   };
 
@@ -48,12 +51,23 @@ const AddDataPart = () => {
     "mobilephone",
   ];
   return (
-    <div style={{ position: "absolute", top: "115vh", width: "300px",backgroundColor:"silver",padding:"20px" }}>
+    <div
+      style={{
+        position: "absolute",
+        top: "115vh",
+        width: "300px",
+        backgroundColor: "silver",
+        padding: "20px",
+      }}
+    >
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
         <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
         {labels.map((eachLabel, index) => {
           return (
-            <div key={`${types[index]}_${labels[index]}`} style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              key={`${types[index]}_${labels[index]}`}
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
               <label>{eachLabel}</label>
               <input
                 onChange={(e) =>

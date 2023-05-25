@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SEARCH_USERS_QUERY } from "../GQL/query/query"
+import { SEARCH_USERS_QUERY } from "../GQL/query/query";
 import { UPDATE_USER_MUTATION } from "../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
 import client from "../apollo.js";
@@ -16,7 +16,8 @@ export const SearchDataHandlerContextProvider = (props) => {
       });
       setSearchData(data.searchUsers);
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
+      alert(error.message);
     }
   }
   const [updateUserMutation] = useMutation(UPDATE_USER_MUTATION, {
@@ -33,10 +34,11 @@ export const SearchDataHandlerContextProvider = (props) => {
       },
     })
       .then((result) => console.log(result))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error.message);
+        alert(error.message);
+      });
   };
-
-
 
   let contextValue = {
     searchDataValue: searchData,
