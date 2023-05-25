@@ -5,7 +5,7 @@ const {
   deleteUser,
   updateUser,
   registerUser,
-  loginUser
+  loginUser,
 } = require("../methods/method");
 
 const resolvers = {
@@ -22,14 +22,16 @@ const resolvers = {
           ...user,
           dataId: user._id.toString(),
         }));
-        // testData(result)
         return result;
       } catch (error) {
         console.error(error);
         throw error;
       }
     },
-    searchUsers: async (_, { searchTerm }) => {
+    searchUsers: async (_, { searchTerm }, context) => {
+      if (context.user!=="s202032808@gmail.com") {
+          throw new Error("您非網站管理者")
+      }
       try {
         const users = await searchUser(searchTerm, "usersData", "Data");
         return users.map((user) => ({ ...user, dataId: user._id.toString() }));
@@ -66,24 +68,32 @@ const resolvers = {
       }
     },
     register: async (_, { username, password }) => {
-     let data= {username,password}
-     try {
-      const token = await registerUser(data, "userAccountData", "userNamePasswordData");
-      console.log(token)
-      return token ;
-     } catch (error) {
-       console.error(error);
-     }
+      let data = { username, password };
+      try {
+        const token = await registerUser(
+          data,
+          "userAccountData",
+          "userNamePasswordData"
+        );
+        console.log(token);
+        return token;
+      } catch (error) {
+        console.error(error);
+      }
     },
     login: async (_, { username, password }) => {
-    let data = {username,password}
-    try {
-      const token = await loginUser(data, "userAccountData", "userNamePasswordData");
-      console.log(token)
-      return token ;
-     } catch (error) {
-       console.error(error);
-     }
+      let data = { username, password };
+      try {
+        const token = await loginUser(
+          data,
+          "userAccountData",
+          "userNamePasswordData"
+        );
+        console.log(token);
+        return token;
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

@@ -8,7 +8,7 @@ import { userAccountContextAPi } from "../store/handleUserAccountContextApi";
 import { Navigate } from "react-router-dom";
 const HomePage = () => {
   const { isLoggedIn } = useContext(userAccountContextAPi);
-  console.log(isLoggedIn)
+
   //  console.log(isLoggedIn)
   //   const navigate =useNavigate()
   //   if(!isLoggedIn){

@@ -1,13 +1,12 @@
-
 const { typeDefs } = require("./GQL/typedef");
-const{resolvers} =require("./GQL/resolver")
-
+const { resolvers } = require("./GQL/resolver");
+const { tokenVerify} = require("./GQL/context");
 const express = require("express");
-const { ApolloServer} = require("apollo-server-express");
+const { ApolloServer } = require("apollo-server-express");
 // const fs = require('fs');
 const app = express();
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context:tokenVerify });
 
 // 啟動 GraphQL 伺服器
 async function startApolloServer() {
