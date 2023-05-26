@@ -130,6 +130,7 @@ const resolvers = {
           "userAccountData",
           "userNamePasswordData"
         );
+        console.count()
         console.log(favoritesItems);
         return favoritesItems;
       } catch (error) {

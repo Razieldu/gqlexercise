@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useMutation } from "@apollo/client";
@@ -34,21 +34,24 @@ const MyData = (props) => {
     });
   };
 
+  const throttledHandleFavoriteMutation = useCallback(throttle(
+    handleFavoriteMutation,
+    10000
+  ),[]);
   const handleFavorite = async (event, dataId, favorite) => {
     // console.log(favorite)
     // console.log(dataId);
     try {
       setLike(() => !like);
-      const result = await handleFavoriteMutation({
+      const result = await throttledHandleFavoriteMutation({
         variables: {
           token: localStorage.getItem("token"),
           dataId,
         },
       });
-      console.log(result);
+       console.log("發動",result)
     } catch (error) {
-
-      console.error(error.message)
+      console.error(error.message);
     }
   };
 
