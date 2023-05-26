@@ -7,7 +7,7 @@ export const handleSearchDataContext = React.createContext();
 
 export const SearchDataHandlerContextProvider = (props) => {
   const [searchData, setSearchData] = useState([]);
-
+   
   async function searchUsers(searchTerm) {
     try {
       let token = localStorage.getItem("token");
@@ -56,6 +56,7 @@ export const SearchDataHandlerContextProvider = (props) => {
         alert(error.message);
       });
   };
+
 
   let contextValue = {
     searchDataValue: searchData,

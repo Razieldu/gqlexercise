@@ -174,6 +174,7 @@ async function loginUser(userInfo, databaseName, collectionName) {
     const { password, username } = userInfo;
     // 檢查使用者名稱是否存在
     const existingUser = await collection.findOne({ username });
+    console.log(existingUser)
     if (!existingUser) {
       console.log("使用者名稱不存在");
       return { token: null, message: { message: "使用者名稱不存在" } }; // 使用者名稱不存在，返回 null

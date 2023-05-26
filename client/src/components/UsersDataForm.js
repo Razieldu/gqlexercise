@@ -108,7 +108,7 @@ const UsersDataForm = () => {
               color: "primary.main",
             },
           }}
-          density="compact"
+          density="standard"
           rows={
             createRow(resultdata).length ? createRow(resultdata) : defaultRow
           }
