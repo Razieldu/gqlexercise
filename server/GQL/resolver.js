@@ -6,6 +6,8 @@ const {
   updateUser,
   registerUser,
   loginUser,
+  handleFavorite,
+  getFavorites,
 } = require("../methods/method");
 
 const resolvers = {
@@ -38,6 +40,18 @@ const resolvers = {
       } catch (error) {
         console.error(error);
         throw error;
+      }
+    },
+    getFavorites: async (_, { token }) => {
+      try {
+        const userFavoriteData = await getFavorites(
+          token,
+          "userAccountData",
+          "userNamePasswordData"
+        );
+        return userFavoriteData;
+      } catch (error) {
+        console.error(error);
       }
     },
     // () => {
@@ -104,6 +118,20 @@ const resolvers = {
         );
         console.log(token);
         return token;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    handleFavorite: async (_, { token, dataId }) => {
+      try {
+        const favoritesItems = await handleFavorite(
+          token,
+          dataId,
+          "userAccountData",
+          "userNamePasswordData"
+        );
+        console.log(favoritesItems);
+        return favoritesItems;
       } catch (error) {
         console.error(error);
       }

@@ -2,9 +2,9 @@ import { useState, useContext, useCallback } from "react";
 // import { SEARCH_USERS_QUERY } from "../GQL/query/query";
 // import client from "../apollo.js";
 import DeletePart from "./DeletePart";
-import MyInput from "./MyInput";
 import { throttle } from "lodash";
 import { handleSearchDataContext } from "../store/handleSearchContextApi";
+import MyData from "./MyData";
 const SearchPartandDeletePart = () => {
   const [targetSearchInput, setTargetSearchInput] = useState("");
   // const [targetSearchData, setTargetSearchData] = useState([]);
@@ -47,13 +47,14 @@ const SearchPartandDeletePart = () => {
     let changeValue = event.target.value;
     let updateObject;
     ctx.setSearchDataValue(() => {
-      let readyToUpdateArray = [...ctx.searchDataValue];
+      let readyToUpdateArray = [...ctx.searchDataValue]
       for (let i = 0; i < ctx.searchDataValue.length; i++) {
         for (let keykey in ctx.searchDataValue[i]) {
           let tempObj = ctx.searchDataValue[i];
           if (keykey === "id" && tempObj[keykey] === id) {
             updateObject = { ...tempObj, [key]: changeValue };
             delete updateObject.__typename;
+            delete updateObject.favorite;
             readyToUpdateArray[i] = updateObject;
             throttleInputChangeHandle(updateObject, dataId);
             return readyToUpdateArray;
@@ -95,7 +96,7 @@ const SearchPartandDeletePart = () => {
         >
           {ctx.searchDataValue.map((each, index) => {
             return (
-              <MyInput
+              <MyData
                 key={each.dataId}
                 each={each}
                 index={index}

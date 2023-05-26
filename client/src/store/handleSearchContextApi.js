@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SEARCH_USERS_QUERY } from "../GQL/query/query";
+import { SEARCH_USERS_QUERY, getFavorite } from "../GQL/query/query";
 import { UPDATE_USER_MUTATION } from "../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
 import client from "../apollo.js";
@@ -10,11 +10,28 @@ export const SearchDataHandlerContextProvider = (props) => {
 
   async function searchUsers(searchTerm) {
     try {
+      let token = localStorage.getItem("token");
       const { data } = await client.query({
         query: SEARCH_USERS_QUERY,
         variables: { searchTerm },
       });
-      setSearchData(data.searchUsers);
+      const { data: favoriteData } = await client.query({
+        query: getFavorite,
+        variables: { token },
+      });
+
+      let { getFavorites } = favoriteData;
+      let idFavorite =
+        getFavorites.length > 0 ? getFavorites.map((one) => one.dataId) : [];
+      let addFavoriteData = data.searchUsers.map((eachUserObject) => {
+        if (idFavorite.includes(eachUserObject.dataId)) {
+          return { ...eachUserObject, favorite: true };
+        } else {
+          return { ...eachUserObject, favorite: false };
+        }
+      });
+      setSearchData(addFavoriteData);
+      console.log(searchData)
     } catch (error) {
       console.error(error.message);
       alert(error.message);

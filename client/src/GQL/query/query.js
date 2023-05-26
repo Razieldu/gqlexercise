@@ -32,3 +32,11 @@ import {gql} from "@apollo/client";
     }
   }
 `
+
+export const getFavorite = gql`
+query Query($token: String!) {
+  getFavorites(token: $token) {
+    dataId
+  }
+}
+`

@@ -132,8 +132,11 @@ async function registerUser(userInfo, databaseName, collectionName) {
       console.log("用户名已存在");
       return { token: null, message: { message: "用戶名已存在" } }; // 如果用户名已存在，停止注册流程并返回 null
     }
-
-    let newUserData = { ...userInfo };
+    let otherData = {
+      displayName: "",
+      favoritesItems: [],
+    };
+    let newUserData = { ...userInfo, ...otherData };
     let { username, password } = newUserData;
     // 对密码进行哈希加密
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -200,6 +203,52 @@ async function loginUser(userInfo, databaseName, collectionName) {
   }
 }
 
+async function handleFavorite(token, dataId, databaseName, collectionName) {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const decodedToken = jwt.verify(token, "userLoginKey");
+    const user = await collection.findOne({ username: decodedToken.username });
+    const favoritesItems = user.favoritesItems || [];
+    const existingItemIndex = favoritesItems.findIndex(
+      (item) => item.dataId === dataId
+    );
+
+    if (existingItemIndex !== -1) {
+      // 物件已存在於收藏清單中，表示要取消收藏
+      favoritesItems.splice(existingItemIndex, 1);
+    
+    } else {
+      // 物件不存在於收藏清單中，表示要加入收藏
+      favoritesItems.push({ dataId });
+    }
+
+    // 更新使用者的收藏清單
+    await collection.updateOne({ username: decodedToken.username }, { $set: { favoritesItems } });
+
+    // 返回更新後的收藏清單
+    return favoritesItems;
+  } catch (error) {
+    // 錯誤處理邏輯
+    console.error(error);
+  }
+}
+
+async function getFavorites(token, databaseName, collectionName) {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const decodedToken = jwt.verify(token, "userLoginKey");
+    const user = await collection.findOne({ username: decodedToken.username });
+    const favoritesItems = user.favoritesItems || [];
+    return favoritesItems;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 module.exports = {
   getUsers,
   searchUser,
@@ -208,4 +257,6 @@ module.exports = {
   updateUser,
   registerUser,
   loginUser,
+  handleFavorite,
+  getFavorites,
 };

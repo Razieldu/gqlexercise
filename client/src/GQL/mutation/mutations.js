@@ -51,3 +51,13 @@ export const LOGIN_USER = gql`
     }
   }
 `;
+
+export const HANDLE_FAVORITE = gql`
+mutation Mutation($token: String!, $dataId: String!) {
+  handleFavorite(token: $token, dataId: $dataId) {
+    dataId
+  }
+}
+`;
+
+

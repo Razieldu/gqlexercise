@@ -11,10 +11,10 @@ import router from "./routers.js/routers";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ApolloProvider client={client}>
-    <UserAccountProvider>
-      <SearchDataHandlerContextProvider>
+    <SearchDataHandlerContextProvider>
+      <UserAccountProvider>
         <RouterProvider router={router} />
-      </SearchDataHandlerContextProvider>
-    </UserAccountProvider>
+      </UserAccountProvider>
+    </SearchDataHandlerContextProvider>
   </ApolloProvider>
 );
