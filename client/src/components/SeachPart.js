@@ -55,6 +55,7 @@ const SearchPartandDeletePart = () => {
             updateObject = { ...tempObj, [key]: changeValue };
             delete updateObject.__typename;
             delete updateObject.favorite;
+            console.log(updateObject)
             readyToUpdateArray[i] = updateObject;
             throttleInputChangeHandle(updateObject, dataId);
             return readyToUpdateArray;

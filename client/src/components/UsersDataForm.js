@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { BarLoader } from "react-spinners";
 import { getQuery } from "../GQL/query/query";
 import {
@@ -10,6 +10,7 @@ import {
 } from "@mui/x-data-grid";
 import { createColumns, createRow } from "../logic";
 import client from "../apollo";
+import { handleSearchDataContext } from "../store/handleSearchContextApi";
 let defaultRow = [
   {
     id: 1,
@@ -46,7 +47,9 @@ const UsersDataForm = () => {
   const [loading, setLoading] = useState(true);
   const [resultdata, setData] = useState([]);
   const [error, setError] = useState(false);
-
+  const [rowState, setRowState] = useState([]);
+  const [columnState, setColumnState] = useState([]);
+  const { updateDateBaseFn } = useContext(handleSearchDataContext);
   const fetchData = async () => {
     const {
       loading: queryLoading,
@@ -66,6 +69,43 @@ const UsersDataForm = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setRowState();
+    setColumnState(createColumns(resultdata));
+    setRowState(
+      createRow(resultdata).length ? createRow(resultdata) : defaultRow
+    );
+  }, [resultdata]);
+
+  // const handleRowEditStart = (params, event) => {
+  //   event.defaultMuiPrevented = true;
+  // };
+
+  // const handleRowEditStop = (params, event) => {
+  //   event.defaultMuiPrevented = true;
+  // };
+  const handleCellEditCommit = (newRow) => {
+    const updatedRow = { ...newRow, isNew: false };
+    console.log(updatedRow);
+    setRowState(() => {
+      return rowState.map((row) => (row.id === newRow.id ? updatedRow : row));
+    });
+    delete updatedRow["isNew"];
+    let dataBaseFormat = {
+      dataId: updatedRow["id"],
+      id: updatedRow["col1"],
+      name: updatedRow["col2"],
+      email: updatedRow["col3"],
+      workplace: updatedRow["col4"],
+      worktitle: updatedRow["col5"],
+      address: updatedRow["col6"],
+      tel: updatedRow["col7"],
+      mobilephone: updatedRow["col8"],
+    };
+    updateDateBaseFn(dataBaseFormat,dataBaseFormat.dataId);
+    return updatedRow;
+  };
+
   return (
     <div
       style={{
@@ -74,7 +114,7 @@ const UsersDataForm = () => {
         justifyContent: "flex-start",
         alignItems: "center",
         flexDirection: "column",
-        height:"90vh"
+        height: "90vh",
       }}
     >
       <h1>向資料庫要資料並顯示</h1>
@@ -88,7 +128,7 @@ const UsersDataForm = () => {
             alignItems: "center",
             position: "absolute",
             zIndex: "100",
-            paddingTop:`${loading?"200px":"0px"}`,
+            paddingTop: `${loading ? "200px" : "0px"}`,
             top: "-30%",
           }}
         >
@@ -96,6 +136,13 @@ const UsersDataForm = () => {
         </div>
       ) : (
         <DataGrid
+          // onRowEditStart={handleRowEditStart}
+          // onRowEditStop={handleRowEditStop}
+          processRowUpdate={handleCellEditCommit}
+          onProcessRowUpdateError={(error) => {
+            // 处理行更新错误的逻辑
+            console.error("行更新错误:", error);
+          }}
           slots={{ toolbar: CustomToolBar }}
           sx={{
             m: 3,
@@ -109,10 +156,8 @@ const UsersDataForm = () => {
             },
           }}
           density="standard"
-          rows={
-            createRow(resultdata).length ? createRow(resultdata) : defaultRow
-          }
-          columns={createColumns(resultdata)}
+          rows={rowState}
+          columns={columnState}
         />
       )}
       {error && <p>Error {error.message}</p>}
