@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext,useCallback } from "react";
 import { BarLoader } from "react-spinners";
 import { getQuery } from "../GQL/query/query";
 import {
@@ -11,6 +11,8 @@ import {
 import { createColumns, createRow } from "../logic";
 import client from "../apollo";
 import { handleSearchDataContext } from "../store/handleSearchContextApi";
+import { throttle } from "lodash";
+
 let defaultRow = [
   {
     id: 1,
@@ -77,13 +79,14 @@ const UsersDataForm = () => {
     );
   }, [resultdata]);
 
-  // const handleRowEditStart = (params, event) => {
-  //   event.defaultMuiPrevented = true;
-  // };
+  const throttleSendToDatabase = useCallback(
+    throttle((updateObject, dataId) => {
+      console.log(updateObject, dataId);
+       updateDateBaseFn(updateObject, dataId);
+    }, 10000),
+    []
+  );
 
-  // const handleRowEditStop = (params, event) => {
-  //   event.defaultMuiPrevented = true;
-  // };
   const handleCellEditCommit = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     console.log(updatedRow);
@@ -102,7 +105,7 @@ const UsersDataForm = () => {
       tel: updatedRow["col7"],
       mobilephone: updatedRow["col8"],
     };
-    updateDateBaseFn(dataBaseFormat,dataBaseFormat.dataId);
+    throttleSendToDatabase(dataBaseFormat,dataBaseFormat.dataId);
     return updatedRow;
   };
 
@@ -136,8 +139,6 @@ const UsersDataForm = () => {
         </div>
       ) : (
         <DataGrid
-          // onRowEditStart={handleRowEditStart}
-          // onRowEditStop={handleRowEditStop}
           processRowUpdate={handleCellEditCommit}
           onProcessRowUpdateError={(error) => {
             // 处理行更新错误的逻辑

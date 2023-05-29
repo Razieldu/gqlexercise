@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import UsersDataForm from "../components/UsersDataForm";
 import AddDataPart from "../components/AddDataPart";
-import SearchPartandDeletePart from "../components/SeachPart";
+import SearchPartandDeletePart from "../components/SearchPart";
 import UpdateDataPart from "../components/UpdateDataPart";
 import NavigationBar from "../components/NavigationBar";
 import { userAccountContextAPi } from "../store/handleUserAccountContextApi";

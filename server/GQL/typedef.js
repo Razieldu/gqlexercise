@@ -6,8 +6,11 @@ const typeDefs = gql`
     username: String!
   }
 
-  type Token {
+  type UserData {
     token: String
+    userName:String
+    displayName:String
+    favoritesItems:[Favorites]
   }
 
   type Message {
@@ -15,7 +18,7 @@ const typeDefs = gql`
   }
 
   type AuthPayload {
-    token: Token
+    userData: UserData
     message: Message
   }
 

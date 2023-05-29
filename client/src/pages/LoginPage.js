@@ -56,14 +56,15 @@ export default function SignIn() {
           password: userData.get("password"),
         },
       });
-      console.log(data);
+      console.log(`${data}前端data`);
       if (data?.login?.message?.message === "使用者名稱不存在") {
         alert("用户名不存在");
       } else if (data?.login?.message?.message === "密碼不正確") {
         alert("密碼錯誤");
       } else {
-        const token = data?.login?.token?.token;
-        ctx.login(token);
+        console.log(data.login)
+        const userData = data?.login?.userData
+        ctx.login(userData);
         navigate("/home");
       }
     } catch (error) {

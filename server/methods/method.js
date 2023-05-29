@@ -130,7 +130,7 @@ async function registerUser(userInfo, databaseName, collectionName) {
     });
     if (existingUser) {
       console.log("用户名已存在");
-      return { token: null, message: { message: "用戶名已存在" } }; // 如果用户名已存在，停止注册流程并返回 null
+      return { userData: null, message: { message: "用戶名已存在" } }; // 如果用户名已存在，停止注册流程并返回 null
     }
     let otherData = {
       displayName: "",
@@ -149,15 +149,18 @@ async function registerUser(userInfo, databaseName, collectionName) {
       `User with id ${result.insertedId} has been added to the database.`
     );
 
-    const token = {
+    const userData = {
       token: jwt.sign({ username }, "userLoginKey"),
+      userName:username,
+      displayName:"",
+      favoritesItems:[]
     };
     const message = {
       message: "登入成功",
     };
 
     // 返回符合 AuthPayload 类型的对象
-    return { token, message };
+    return { userData, message };
   } catch (error) {
     console.error(error);
   } finally {
@@ -174,29 +177,32 @@ async function loginUser(userInfo, databaseName, collectionName) {
     const { password, username } = userInfo;
     // 檢查使用者名稱是否存在
     const existingUser = await collection.findOne({ username });
-    console.log(existingUser)
+    // console.log(existingUser);
     if (!existingUser) {
       console.log("使用者名稱不存在");
-      return { token: null, message: { message: "使用者名稱不存在" } }; // 使用者名稱不存在，返回 null
+      return { userData: null, message: { message: "使用者名稱不存在" } }; // 使用者名稱不存在，返回 null
     }
 
     // 對比密碼
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
     if (!passwordMatch) {
       console.log("密碼不正確");
-      return { token: null, message: { message: "密碼不正確" } }; // 密碼不正確，返回 null
+      return { userData: null, message: { message: "密碼不正確" } }; // 密碼不正確，返回 null
     }
 
     // 生成 JWT Token
-    const token = {
+    const userData = {
       token: jwt.sign({ username }, "userLoginKey"),
+      userName: existingUser.username,
+      displayName: existingUser.displayName,
+      favoritesItems: existingUser.favoritesItems,
     };
     const message = {
       message: "登入成功",
     };
 
     // 返回 Token
-    return { token, message };
+    return { userData, message };
   } catch (error) {
     console.error(error);
   } finally {
@@ -219,14 +225,16 @@ async function handleFavorite(token, dataId, databaseName, collectionName) {
     if (existingItemIndex !== -1) {
       // 物件已存在於收藏清單中，表示要取消收藏
       favoritesItems.splice(existingItemIndex, 1);
-    
     } else {
       // 物件不存在於收藏清單中，表示要加入收藏
       favoritesItems.push({ dataId });
     }
 
     // 更新使用者的收藏清單
-    await collection.updateOne({ username: decodedToken.username }, { $set: { favoritesItems } });
+    await collection.updateOne(
+      { username: decodedToken.username },
+      { $set: { favoritesItems } }
+    );
 
     // 返回更新後的收藏清單
     return favoritesItems;

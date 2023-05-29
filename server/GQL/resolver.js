@@ -102,7 +102,7 @@ const resolvers = {
           "userAccountData",
           "userNamePasswordData"
         );
-        console.log(token);
+        // console.log(token);
         return token;
       } catch (error) {
         console.error(error);
@@ -111,13 +111,13 @@ const resolvers = {
     login: async (_, { username, password }) => {
       let data = { username, password };
       try {
-        const token = await loginUser(
+        const response = await loginUser(
           data,
           "userAccountData",
           "userNamePasswordData"
         );
-        console.log(token);
-        return token;
+        console.log(response);
+        return response;
       } catch (error) {
         console.error(error);
       }
@@ -130,7 +130,7 @@ const resolvers = {
           "userAccountData",
           "userNamePasswordData"
         );
-        console.count()
+        console.count();
         console.log(favoritesItems);
         return favoritesItems;
       } catch (error) {

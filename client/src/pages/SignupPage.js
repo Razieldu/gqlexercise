@@ -63,7 +63,7 @@ export default function SignUp() {
         alert("用户名已存在，请使用其他用户名。");
       } else {
         // 注册成功，处理返回的 token 数据
-        const token = data?.register?.token?.token;
+        const token = data?.register?.userData?.token;
         // 执行您希望的操作，例如保存 token 到本地存储、跳转到其他页面等
         ctx.login(token);
         navigate("/home");

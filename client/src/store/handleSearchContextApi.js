@@ -10,7 +10,8 @@ export const SearchDataHandlerContextProvider = (props) => {
    
   async function searchUsers(searchTerm) {
     try {
-      let token = localStorage.getItem("token");
+      let token = JSON.parse(localStorage.getItem("userData"))?.token;
+      console.log(token)
       const { data } = await client.query({
         query: SEARCH_USERS_QUERY,
         variables: { searchTerm },

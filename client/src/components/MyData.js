@@ -25,6 +25,11 @@ const MyData = (props) => {
   });
 
   const handleInputShow = (index) => {
+    if (
+      JSON.parse(localStorage.getItem("userData")).username !==
+      "s202032808@gmail.com"
+    )
+      return;
     setInputShow((prev) => {
       let temp = prev;
       let updatedObject = {
@@ -46,7 +51,7 @@ const MyData = (props) => {
       setLike(() => !like);
       const result = await throttledHandleFavoriteMutation({
         variables: {
-          token: localStorage.getItem("token"),
+          token: JSON.parse(localStorage.getItem("userData"))?.token,
           dataId,
         },
       });

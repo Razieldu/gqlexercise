@@ -7,7 +7,7 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   // 從 localStorage 中獲取 JWT Token
-  const token = localStorage.getItem("token");
+  const token = JSON.parse(localStorage.getItem("userData"))?.token
   // 返回帶有 JWT Token 的標頭
   return {
     headers: {

@@ -27,10 +27,15 @@ export const UPDATE_USER_MUTATION = gql`
   }
 `;
 export const REGISTER_USER = gql`
-mutation Register($username: String!, $password: String!) {
+mutation Mutation($username: String!, $password: String!) {
   register(username: $username, password: $password) {
-    token {
+    userData {
       token
+      userName
+      displayName
+      favoritesItems {
+        dataId
+      }
     }
     message {
       message
@@ -40,16 +45,21 @@ mutation Register($username: String!, $password: String!) {
 `;
 
 export const LOGIN_USER = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      token {
-        token
-      }
-      message {
-        message
+mutation Login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    userData {
+      token
+      userName
+      displayName
+      favoritesItems {
+        dataId
       }
     }
+    message {
+      message
+    }
   }
+}
 `;
 
 export const HANDLE_FAVORITE = gql`

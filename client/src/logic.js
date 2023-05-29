@@ -27,7 +27,7 @@ export const createColumns = () => {
         field: `col${index + 1}`,
         headerName: head,
         width: widthChanged(head),
-        editable: true,
+        editable: head==="會員屬性"?false: true
       };
     });
     return columns;
