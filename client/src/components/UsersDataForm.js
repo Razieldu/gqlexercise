@@ -73,7 +73,7 @@ const UsersDataForm = () => {
 
   useEffect(() => {
     setRowState();
-    setColumnState(createColumns(resultdata));
+    setColumnState(createColumns(permission));
     setRowState(
       createRow(resultdata).length ? createRow(resultdata) : defaultRow
     );
@@ -87,11 +87,11 @@ const UsersDataForm = () => {
     []
   );
   let permission =
-    JSON.parse(localStorage.getItem("userData")).username ===
+    JSON.parse(localStorage.getItem("userData")).userName ===
     "s202032808@gmail.com"
       ? true
       : false;
-
+  console.log(permission);
   const handleCellEditCommit = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
     console.log(updatedRow);
@@ -144,7 +144,7 @@ const UsersDataForm = () => {
         </div>
       ) : (
         <DataGrid
-          processRowUpdate={permission?handleCellEditCommit:null}
+          processRowUpdate={permission ? handleCellEditCommit : null}
           onProcessRowUpdateError={(error) => {
             // 处理行更新错误的逻辑
             console.error("行更新错误:", error);

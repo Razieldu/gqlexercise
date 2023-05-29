@@ -26,7 +26,7 @@ const MyData = (props) => {
 
   const handleInputShow = (index) => {
     if (
-      JSON.parse(localStorage.getItem("userData")).username !==
+      JSON.parse(localStorage.getItem("userData")).userName !==
       "s202032808@gmail.com"
     )
       return;
