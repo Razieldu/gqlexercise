@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext,useCallback } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { BarLoader } from "react-spinners";
 import { getQuery } from "../GQL/query/query";
 import {
@@ -82,10 +82,15 @@ const UsersDataForm = () => {
   const throttleSendToDatabase = useCallback(
     throttle((updateObject, dataId) => {
       console.log(updateObject, dataId);
-       updateDateBaseFn(updateObject, dataId);
+      updateDateBaseFn(updateObject, dataId);
     }, 10000),
     []
   );
+  let permission =
+    JSON.parse(localStorage.getItem("userData")).username ===
+    "s202032808@gmail.com"
+      ? true
+      : false;
 
   const handleCellEditCommit = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };
@@ -105,7 +110,7 @@ const UsersDataForm = () => {
       tel: updatedRow["col7"],
       mobilephone: updatedRow["col8"],
     };
-    throttleSendToDatabase(dataBaseFormat,dataBaseFormat.dataId);
+    throttleSendToDatabase(dataBaseFormat, dataBaseFormat.dataId);
     return updatedRow;
   };
 
@@ -139,7 +144,7 @@ const UsersDataForm = () => {
         </div>
       ) : (
         <DataGrid
-          processRowUpdate={handleCellEditCommit}
+          processRowUpdate={permission?handleCellEditCommit:null}
           onProcessRowUpdateError={(error) => {
             // 处理行更新错误的逻辑
             console.error("行更新错误:", error);
