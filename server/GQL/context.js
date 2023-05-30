@@ -8,7 +8,7 @@ const tokenVerify = async ({ req }) => {
      
       if (token) {
         const decoded = jwt.verify(tokenWithoutBearer, "userLoginKey");
-        user = decoded.username;
+        user = decoded.userRole;
       }
     } catch (error) {
       console.log("JWT 驗證失敗：", error);

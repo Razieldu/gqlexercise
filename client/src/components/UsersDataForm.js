@@ -71,13 +71,19 @@ const UsersDataForm = () => {
     fetchData();
   }, []);
 
+  let permission =
+  JSON.parse(localStorage.getItem("userData")).username ===
+  "s202032808@gmail.com"
+    ? true
+    : false;
+
   useEffect(() => {
     setRowState();
     setColumnState(createColumns(permission));
     setRowState(
       createRow(resultdata).length ? createRow(resultdata) : defaultRow
     );
-  }, [resultdata]);
+  }, [resultdata,permission]);
 
   const throttleSendToDatabase = useCallback(
     throttle((updateObject, dataId) => {
@@ -86,11 +92,7 @@ const UsersDataForm = () => {
     }, 10000),
     []
   );
-  let permission =
-    JSON.parse(localStorage.getItem("userData")).userName ===
-    "s202032808@gmail.com"
-      ? true
-      : false;
+
   console.log(permission);
   const handleCellEditCommit = (newRow) => {
     const updatedRow = { ...newRow, isNew: false };

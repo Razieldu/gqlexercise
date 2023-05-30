@@ -12,11 +12,6 @@ const {
 
 const resolvers = {
   Query: {
-    // users: async () => {
-    //     const collection = db.collection('userData');
-    //     const users = await collection.find().toArray();
-    //     return users;
-    //   },
     userdata: async () => {
       try {
         const users = await getUsers("usersData", "Data");
@@ -54,29 +49,23 @@ const resolvers = {
         console.error(error);
       }
     },
-    // () => {
-    //   //本地端拿資料
-    //   const rawData = fs.readFileSync(path.join(__dirname, 'data.json'));
-    //   const data = JSON.parse(rawData);
-    //   return data;
-    // }
   },
   Mutation: {
-    addUser: (_, args, context) => {
-      if (context.user !== "s202032808@gmail.com") {
+    addUser: (_, args, { user }) => {
+      if (user !== "ADMIN") {
         throw new Error("您非網站管理者,請洽詢管理員");
       }
       addUser(args.userInput, "usersData", "Data");
     },
-    deleteUser: (_, { id }, context) => {
-      if (context.user !== "s202032808@gmail.com") {
+    deleteUser: (_, { id }, { user }) => {
+      if (user !== "ADMIN") {
         throw new Error("您非網站管理者,請洽詢管理員");
       }
       deleteUser(id, "usersData", "Data");
     },
-    updateUserData: async (_, { dataId, UpdateUserInput }, context) => {
+    updateUserData: async (_, { dataId, UpdateUserInput }, { user }) => {
       console.log(UpdateUserInput);
-      if (context.user !== "s202032808@gmail.com") {
+      if (user !== "ADMIN") {
         throw new Error("您非網站管理者,請洽詢管理員");
       }
       console.log(dataId);
@@ -94,8 +83,8 @@ const resolvers = {
         return false;
       }
     },
-    register: async (_, { username, password }) => {
-      let data = { username, password };
+    register: async (_, { username, password, displayname }) => {
+      let data = { username, password, displayname };
       try {
         const token = await registerUser(
           data,

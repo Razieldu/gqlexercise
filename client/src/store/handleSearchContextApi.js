@@ -11,7 +11,7 @@ export const SearchDataHandlerContextProvider = (props) => {
   async function searchUsers(searchTerm) {
     try {
       let token = JSON.parse(localStorage.getItem("userData"))?.token;
-      console.log(token)
+      // console.log(token)
       const { data } = await client.query({
         query: SEARCH_USERS_QUERY,
         variables: { searchTerm },
@@ -32,7 +32,7 @@ export const SearchDataHandlerContextProvider = (props) => {
         }
       });
       setSearchData(addFavoriteData);
-      console.log(searchData)
+      // console.log(searchData)
     } catch (error) {
       console.error(error.message);
       alert(error.message);

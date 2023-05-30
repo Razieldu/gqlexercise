@@ -15,7 +15,18 @@ const AddDataPart = () => {
 
   const handleFormSubmit = (event, formState) => {
     event.preventDefault();
-    if (Object.keys(formState).some((key) => formState[key] === "")) return;
+    if (Object.keys(formState).some((key) => formState[key] === "")) {
+      alert("資料尚未填寫完全");
+      return;
+    }
+    if (
+      JSON.parse(localStorage.getItem("userData")).username !==
+      "s202032808@gmail.com"
+    ){
+      alert("您沒有權限執行此操作,請洽管理員");
+      return;
+    }
+ 
     dispatchFn({ type: "reset" });
     addUserMutation({
       variables: {

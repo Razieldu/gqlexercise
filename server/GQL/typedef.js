@@ -8,9 +8,14 @@ const typeDefs = gql`
 
   type UserData {
     token: String
-    userName:String
-    displayName:String
+    username:String
+    displayname:String
     favoritesItems:[Favorites]
+  }
+
+  enum UserRole{
+    MEMBER
+    ADMIN
   }
 
   type Message {
@@ -58,7 +63,7 @@ const typeDefs = gql`
     addUser(userInput: UserInput!): String
     deleteUser(id: String!): String
     updateUserData(dataId: String!, UpdateUserInput: UpdateUserInput!): User
-    register(username: String!, password: String!): AuthPayload!
+    register(username: String!, password: String!,displayname:String!): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
     handleFavorite(token: String!, dataId: String!): [Favorites]
   }

@@ -14,7 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { userAccountContextAPi } from "../store/handleUserAccountContextApi";
 import { useNavigate } from "react-router-dom";
-
+import {generateGravatar} from "../logic"
 
 const pages = ["產品", "價格", "Blog"];
 const settings = ["個人資訊", "帳號", "Dashboard", "登出"];
@@ -43,6 +43,10 @@ function ResponsiveAppBar() {
     }
     setAnchorElUser(null);
   };
+  let userDisplayName = JSON.parse(localStorage.getItem("userData")).displayname
+  console.log(userDisplayName)
+  let accountImage = generateGravatar(userDisplayName)
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -136,7 +140,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={userDisplayName} src={accountImage} />
               </IconButton>
             </Tooltip>
             <Menu

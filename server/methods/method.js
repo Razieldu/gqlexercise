@@ -125,6 +125,7 @@ async function registerUser(userInfo, databaseName, collectionName) {
     const collection = database.collection(collectionName);
 
     // 检查用户名是否已存在
+    console.log(userInfo)
     const existingUser = await collection.findOne({
       username: userInfo.username,
     });
@@ -133,11 +134,18 @@ async function registerUser(userInfo, databaseName, collectionName) {
       return { userData: null, message: { message: "用戶名已存在" } }; // 如果用户名已存在，停止注册流程并返回 null
     }
     let otherData = {
-      displayName: "",
       favoritesItems: [],
+      userRole: "",
+      displayname:userInfo.displayname
     };
+    if (userInfo.username === "s202032808@gmail.com") {
+      otherData.userRole = "ADMIN";
+    } else {
+      otherData.userRole = "MEMBER";
+    }
     let newUserData = { ...userInfo, ...otherData };
-    let { username, password } = newUserData;
+    console.log(newUserData)
+    let { username, password ,displayname} = newUserData;
     // 对密码进行哈希加密
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -150,13 +158,14 @@ async function registerUser(userInfo, databaseName, collectionName) {
     );
 
     const userData = {
-      token: jwt.sign({ username }, "userLoginKey"),
-      userName:username,
-      displayName:"",
-      favoritesItems:[]
+      token: jwt.sign({ username,userRole:otherData.userRole }, "userLoginKey"),
+      username: username,
+      displayname: displayname,
+      favoritesItems: [],
     };
+
     const message = {
-      message: "登入成功",
+      message: "註冊成功",
     };
 
     // 返回符合 AuthPayload 类型的对象
@@ -192,11 +201,13 @@ async function loginUser(userInfo, databaseName, collectionName) {
 
     // 生成 JWT Token
     const userData = {
-      token: jwt.sign({ username }, "userLoginKey"),
-      userName: existingUser.username,
-      displayName: existingUser.displayName,
+      token: jwt.sign({ username,userRole:existingUser.userRole }, "userLoginKey"),
+      username: existingUser.username,
+      displayname: existingUser.displayname,
       favoritesItems: existingUser.favoritesItems,
+      // userRole: existingUser.userRole,
     };
+
     const message = {
       message: "登入成功",
     };

@@ -1,3 +1,5 @@
+import { MD5 } from "crypto-js";
+
 export const createColumns = (permission) => {
   const heads = [
     "會員屬性",
@@ -43,6 +45,7 @@ export const createColumns = (permission) => {
   });
   return columns;
 };
+
 export const createRow = (data) => {
   let contentData = [];
   for (let i = 0; i < data.length; i++) {
@@ -77,3 +80,18 @@ export const createRow = (data) => {
   // console.log(resultRow)
   return resultRow;
 };
+
+export function generateGravatar(name) {
+  // const md5Email = MD5(email.trim().toLowerCase()).toString();
+  // const gravatarUrl = `https://www.gravatar.com/avatar/${md5Email}`;
+  if(!name) return 
+  const initials = name
+    .trim()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase())
+    .join("")
+  const gravatarUrl = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="#ccc"/><text x="50" y="60" font-size="36" font-weight="bold" font-family="Arial, sans-serif" text-anchor="middle" fill="#fff">${initials}</text></svg>`;
+  console.log(gravatarUrl);
+
+  return gravatarUrl;
+}

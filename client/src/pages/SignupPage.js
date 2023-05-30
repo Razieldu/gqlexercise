@@ -45,15 +45,16 @@ export default function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
-    if(!userData.get("email").includes("@")){
-      alert("請輸入有效電子郵件")
-      return
+    if (!userData.get("email").includes("@")) {
+      alert("請輸入有效電子郵件");
+      return;
     }
     try {
       const { data } = await registerUser({
         variables: {
           username: userData.get("email"),
           password: userData.get("password"),
+          displayname: userData.get("displayname"),
         },
       });
 
@@ -63,9 +64,9 @@ export default function SignUp() {
         alert("用户名已存在，请使用其他用户名。");
       } else {
         // 注册成功，处理返回的 token 数据
-        const token = data?.register?.userData?.token;
+        const userData = data?.register?.userData
         // 执行您希望的操作，例如保存 token 到本地存储、跳转到其他页面等
-        ctx.login(token);
+        ctx.login(userData);
         navigate("/home");
       }
     } catch (error) {
@@ -79,6 +80,7 @@ export default function SignUp() {
     console.log({
       email: userData.get("email"),
       password: userData.get("password"),
+      displayname: userData.get("displayname"),
     });
   };
 
@@ -113,6 +115,17 @@ export default function SignUp() {
                   <TextField
                     required
                     fullWidth
+                    name="displayname"
+                    label="使用者名稱"
+                    type="text"
+                    id="displayname"
+                    autoComplete="displayname"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
                     id="email"
                     label="Email Address"
                     name="email"
@@ -130,7 +143,7 @@ export default function SignUp() {
                     autoComplete="new-password"
                   />
                 </Grid>
-                
+
                 {/* <Grid item xs={12}>
                   <FormControlLabel
                     control={
