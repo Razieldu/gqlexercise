@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { DELETE_USER_MUTATION } from "../GQL/mutation/mutations";
+import { DELETE_USER_MUTATION } from "../../GQL/mutation/mutations";
+import "./DeletePart.scss";
 
 const DeletePart = () => {
   const [deleteInput, setDeleteInput] = useState("");
@@ -30,20 +31,7 @@ const DeletePart = () => {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        position: "fixed",
-        bottom: "10px",
-        right: "0px",
-        width: "300px",
-        flexDirection: "column",
-        backgroundColor: "pink",
-        paddingBottom: "40px",
-        height: "100px",
-      }}
-    >
+    <div className="deletePart">
       <h1>刪除區塊</h1>
       <form onSubmit={(event) => handledelete(event, deleteInput)}>
         <input value={deleteInput} onChange={handleDeleteInput} />

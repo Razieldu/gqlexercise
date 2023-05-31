@@ -12,9 +12,9 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { userAccountContextAPi } from "../store/handleUserAccountContextApi";
+import { userAccountContextAPi } from "../../store/handleUserAccountContextApi";
 import { useNavigate } from "react-router-dom";
-import {generateGravatar} from "../logic"
+import {generateGravatar} from "../../helperFuctions/logic"
 
 const pages = ["產品", "價格", "Blog"];
 const settings = ["個人資訊", "帳號", "Dashboard", "登出"];

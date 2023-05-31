@@ -1,6 +1,7 @@
-import CustomUpdateInputReducer from "../customs/CustomUpdateInputReducer";
+import CustomUpdateInputReducer from "../../customs/CustomUpdateInputReducer";
 import { useMutation } from "@apollo/client";
-import { UPDATE_USER_MUTATION } from "../GQL/mutation/mutations";
+import { UPDATE_USER_MUTATION } from "../../GQL/mutation/mutations";
+import "./UpdateDataPart.scss";
 const UpdateDataPart = () => {
   const [formState, dispatchFn] = CustomUpdateInputReducer();
   let labels = [
@@ -51,22 +52,14 @@ const UpdateDataPart = () => {
   };
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "175vh",
-        width: "300px",
-        backgroundColor: "silver",
-        padding: "20px",
-      }}
-    >
+    <div className="updateDataPart">
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
-        <h1 style={{ textAlign: "center" }}>更新資料</h1>
+        <h1 className="title">更新資料</h1>
         {labels.map((eachLabel, index) => {
           return (
             <div
               key={`${types[index]}_${labels[index]}`}
-              style={{ display: "flex", justifyContent: "space-between" }}
+              className="contentAndInputDiv"
             >
               <label>{eachLabel}</label>
               <input
@@ -78,14 +71,7 @@ const UpdateDataPart = () => {
             </div>
           );
         })}
-        <div
-          style={{
-            width: "300px",
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: "20px",
-          }}
-        >
+        <div className="button">
           <button>送出</button>
         </div>
       </form>

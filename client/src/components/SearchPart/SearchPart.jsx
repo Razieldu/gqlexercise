@@ -1,29 +1,12 @@
 import { useState, useContext, useCallback } from "react";
-// import { SEARCH_USERS_QUERY } from "../GQL/query/query";
-// import client from "../apollo.js";
-import DeletePart from "./DeletePart";
+import DeletePart from "../DeletePart/DeletePart";
 import { throttle } from "lodash";
-import { handleSearchDataContext } from "../store/handleSearchContextApi";
-import MyData from "./MyData";
+import { handleSearchDataContext } from "../../store/handleSearchContextApi";
+import MyData from "../MyData/MyData";
+import "./SearchPart.scss";
 const SearchPartandDeletePart = () => {
   const [targetSearchInput, setTargetSearchInput] = useState("");
-  // const [targetSearchData, setTargetSearchData] = useState([]);
-  // const [saveSearchData, setSaveSearchData] = useState([]);
   const ctx = useContext(handleSearchDataContext);
-
-  // async function searchUsers(searchTerm) {
-  //   // console.log(`${searchTerm} searchTerm`);
-  //   try {
-  //     const { data } = await client.query({
-  //       query: SEARCH_USERS_QUERY,
-  //       variables: { searchTerm },
-  //     });
-  //     setTargetSearchData(data.searchUsers);
-  //     setSaveSearchData(data.searchUsers);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
 
   const handleTargetSearchFormSubmit = (event, value) => {
     event.preventDefault();
@@ -47,7 +30,7 @@ const SearchPartandDeletePart = () => {
     let changeValue = event.target.value;
     let updateObject;
     ctx.setSearchDataValue(() => {
-      let readyToUpdateArray = [...ctx.searchDataValue]
+      let readyToUpdateArray = [...ctx.searchDataValue];
       for (let i = 0; i < ctx.searchDataValue.length; i++) {
         for (let keykey in ctx.searchDataValue[i]) {
           let tempObj = ctx.searchDataValue[i];
@@ -55,7 +38,7 @@ const SearchPartandDeletePart = () => {
             updateObject = { ...tempObj, [key]: changeValue };
             delete updateObject.__typename;
             delete updateObject.favorite;
-            console.log(updateObject)
+            console.log(updateObject);
             readyToUpdateArray[i] = updateObject;
             throttleInputChangeHandle(updateObject, dataId);
             return readyToUpdateArray;
@@ -65,35 +48,21 @@ const SearchPartandDeletePart = () => {
     });
   };
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        position: "absolute",
-        top: "235vh",
-        width: "500px",
-        minHeight: "300px",
-        flexDirection: "column",
-        gap: "10px",
-      }}
-    >
+    <div className="searchPart">
       <h1>查詢符合條件的資料</h1>
       <form
         onSubmit={(event) =>
           handleTargetSearchFormSubmit(event, targetSearchInput)
         }
       >
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="inputAndButton">
           <input value={targetSearchInput} onChange={handleTargetSearch} />
           <button>查找</button>
         </div>
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              ctx.searchDataValue.length === 1 ? "1fr" : "1fr 1fr 1fr",
-            paddingTop: "40px",
-          }}
+          className={`renderGetDataPart ${
+            ctx.searchDataValue.length === 1 ? "lengthOne" : "lengthNotOne"
+          }`}
         >
           {ctx.searchDataValue.map((each, index) => {
             return (

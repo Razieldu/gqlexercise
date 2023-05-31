@@ -1,0 +1,19 @@
+.addDataPart {
+  position: absolute;
+  top: 115vh;
+  width: 300px;
+  background-color: silver;
+  padding: 20px;
+  .title {
+    text-align: center;
+  }
+  .inputAndLabel {
+    display: flex;
+    justify-content: space-between;
+  }
+  .button {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+  }
+}

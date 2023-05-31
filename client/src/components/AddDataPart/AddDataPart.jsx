@@ -1,7 +1,7 @@
-import CustomInputReducer from "../customs/CustomAddInputReducer";
-import { ADD_USER_MUTATION } from "../GQL/mutation/mutations";
+import CustomInputReducer from "../../customs/CustomAddInputReducer";
+import { ADD_USER_MUTATION } from "../../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
-
+import "./AddDataPart.scss";
 const AddDataPart = () => {
   // const { state: formState, dispatch: dispatchFn } = CustomInputReducer();
   const [formState, dispatchFn] = CustomInputReducer();
@@ -22,11 +22,11 @@ const AddDataPart = () => {
     if (
       JSON.parse(localStorage.getItem("userData")).username !==
       "s202032808@gmail.com"
-    ){
+    ) {
       alert("您沒有權限執行此操作,請洽管理員");
       return;
     }
- 
+
     dispatchFn({ type: "reset" });
     addUserMutation({
       variables: {
@@ -62,22 +62,14 @@ const AddDataPart = () => {
     "mobilephone",
   ];
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: "115vh",
-        width: "300px",
-        backgroundColor: "silver",
-        padding: "20px",
-      }}
-    >
+    <div className="addDataPart">
       <form onSubmit={(event) => handleFormSubmit(event, formState)}>
-        <h1 style={{ textAlign: "center" }}>添加資料到資料庫</h1>
+        <h1 className="title">添加資料到資料庫</h1>
         {labels.map((eachLabel, index) => {
           return (
             <div
               key={`${types[index]}_${labels[index]}`}
-              style={{ display: "flex", justifyContent: "space-between" }}
+              className="inputAndLabel"
             >
               <label>{eachLabel}</label>
               <input
@@ -89,13 +81,7 @@ const AddDataPart = () => {
             </div>
           );
         })}
-        <div
-          style={{
-            width: "300px",
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: "20px",
-          }}
+        <div className="button"
         >
           <button>送出</button>
         </div>

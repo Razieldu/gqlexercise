@@ -1,7 +1,7 @@
-import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/SignupPage";
-import ForgotPasswordPage from "../pages/ForgotPasswordPage";
+import HomePage from "../pages/HomePage/HomePage";
+import LoginPage from "../pages/LoginPage/LoginPage";
+import SignupPage from "../pages/SignupPage/SignupPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([

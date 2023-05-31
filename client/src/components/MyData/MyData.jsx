@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useMutation } from "@apollo/client";
-import { HANDLE_FAVORITE } from "../GQL/mutation/mutations";
+import { HANDLE_FAVORITE } from "../../GQL/mutation/mutations";
 import { throttle } from "lodash";
-import { handleSearchDataContext } from "../store/handleSearchContextApi";
+import "./MyData.scss";
 const MyData = (props) => {
   const [inputShow, setInputShow] = useState({
     0: false,
@@ -40,8 +40,6 @@ const MyData = (props) => {
     });
   };
 
-  // const ctx = useContext(handleSearchDataContext);
-
   const throttledHandleFavoriteMutation = useCallback(
     throttle(handleFavoriteMutation, 10000),
     []
@@ -75,30 +73,25 @@ const MyData = (props) => {
   let every = props.each;
   return (
     <div
-      style={{
-        padding: "40px",
-        width: "300px",
-        backgroundColor: props.index % 2 === 0 ? "white" : "silver",
-      }}
+      className={`myData ${
+        props.index % 2 === 0 ? "divideByTwo" : "notDivideByTwo"
+      }`}
       key={`${props.index}div${props.index}`}
     >
-      <div style={{ display: "flex", justifyContent: "flex-start" }}>
+      <div className="databaseIdTitle">
         <div>資料庫id : {props.each.dataId}</div>
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-start" }}>
+      <div className="idTitle">
         <div>id : {props.each.id}</div>
       </div>
       {keysArray.map((one, index) => {
         return (
-          <div
-            key={`updatePart${index}`}
-            style={{ display: "flex", justifyContent: "flex-start" }}
-          >
+          <div key={`updatePart${index}`} className="otherInput">
             <div>{`${one}:`}</div>
             {!inputShow[index] && (
               <div
+                className="inputNotShow"
                 onClick={() => handleInputShow(index)}
-                style={{ width: "100%" }}
                 value={every[one]}
               >
                 {every[one]}
@@ -106,9 +99,9 @@ const MyData = (props) => {
             )}
             {inputShow[index] && (
               <input
+                className="inputShow"
                 autoFocus
                 id={`${props.index}input${props.index}_input`}
-                style={{ textAlign: "left", backgroundColor: "pink" }}
                 onBlur={() => {
                   handleInputShow(index);
                 }}
@@ -121,14 +114,7 @@ const MyData = (props) => {
           </div>
         );
       })}
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "flex-end",
-          marginTop: "20px",
-        }}
-      >
+      <div className="likePart">
         {like ? (
           <FavoriteIcon
             sx={{ color: "red" }}

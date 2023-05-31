@@ -13,9 +13,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/client";
-import { REGISTER_USER } from "../GQL/mutation/mutations";
+import { LOGIN_USER } from "../../GQL/mutation/mutations";
 import { useNavigate } from "react-router-dom";
-import { userAccountContextAPi } from "../store/handleUserAccountContextApi";
+import { userAccountContextAPi } from "../../store/handleUserAccountContextApi";
 import { Navigate } from "react-router-dom";
 
 function Copyright(props) {
@@ -38,34 +38,32 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignUp() {
-  const [registerUser, { loading, error }] = useMutation(REGISTER_USER);
+export default function SignIn() {
+  const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
   let navigate = useNavigate();
   const ctx = React.useContext(userAccountContextAPi);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
-    if (!userData.get("email").includes("@")) {
-      alert("請輸入有效電子郵件");
-      return;
+    if(!userData.get("email").includes("@")){
+      alert("請輸入有效電子郵件")
+      return
     }
     try {
-      const { data } = await registerUser({
+      const { data } = await loginUser({
         variables: {
           username: userData.get("email"),
           password: userData.get("password"),
-          displayname: userData.get("displayname"),
         },
       });
-
-      console.log(data);
-      if (data?.register?.message?.message === "用戶名已存在") {
-        // 注册失败，用户名已存在
-        alert("用户名已存在，请使用其他用户名。");
+      console.log(`${data}前端data`);
+      if (data?.login?.message?.message === "使用者名稱不存在") {
+        alert("用户名不存在");
+      } else if (data?.login?.message?.message === "密碼不正確") {
+        alert("密碼錯誤");
       } else {
-        // 注册成功，处理返回的 token 数据
-        const userData = data?.register?.userData
-        // 执行您希望的操作，例如保存 token 到本地存储、跳转到其他页面等
+        console.log(data.login)
+        const userData = data?.login?.userData
         ctx.login(userData);
         navigate("/home");
       }
@@ -76,14 +74,7 @@ export default function SignUp() {
       // 显示具体的错误信息
       console.log("注册失败:", error.message);
     }
-
-    console.log({
-      email: userData.get("email"),
-      password: userData.get("password"),
-      displayname: userData.get("displayname"),
-    });
   };
-
   if (!ctx.isLoggedIn) {
     return (
       <ThemeProvider theme={theme}>
@@ -101,76 +92,61 @@ export default function SignUp() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              註冊
+              登入
             </Typography>
-
             <Box
               component="form"
-              noValidate
               onSubmit={handleSubmit}
-              sx={{ mt: 3 }}
+              noValidate
+              sx={{ mt: 1 }}
             >
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="displayname"
-                    label="使用者名稱"
-                    type="text"
-                    id="displayname"
-                    autoComplete="displayname"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                  />
-                </Grid>
-
-                {/* <Grid item xs={12}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox value="allowExtraEmails" color="primary" />
-                    }
-                    label="我想收到活動相關資訊"
-                  />
-                </Grid> */}
-              </Grid>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+              {/* <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              /> */}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                {loading ? "註冊中..." : "註冊"}
+                {loading ? "登入中..." : "登入"}
               </Button>
-              <Grid container justifyContent="flex-end">
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/forgotPassword" variant="body2">
+                    忘記密碼?
+                  </Link>
+                </Grid>
                 <Grid item>
-                  <Link href="/" variant="body2">
-                    已經擁有帳號 ? 點擊前往登入頁面
+                  <Link href="/signup" variant="body2">
+                    {"尚未註冊嗎? 點擊註冊"}
                   </Link>
                 </Grid>
               </Grid>
             </Box>
           </Box>
-          <Copyright sx={{ mt: 5 }} />
+          <Copyright sx={{ mt: 8, mb: 4 }} />
         </Container>
       </ThemeProvider>
     );

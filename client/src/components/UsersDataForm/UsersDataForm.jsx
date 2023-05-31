@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { BarLoader } from "react-spinners";
-import { getQuery } from "../GQL/query/query";
+import { getQuery } from "../../GQL/query/query";
 import {
   DataGrid,
   GridToolbarColumnsButton,
@@ -8,9 +8,9 @@ import {
   GridToolbarExport,
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid";
-import { createColumns, createRow } from "../logic";
-import client from "../apollo";
-import { handleSearchDataContext } from "../store/handleSearchContextApi";
+import { createColumns, createRow } from "../../helperFuctions/logic";
+import client from "../../GQL/apollo";
+import { handleSearchDataContext } from "../../store/handleSearchContextApi";
 import { throttle } from "lodash";
 
 let defaultRow = [

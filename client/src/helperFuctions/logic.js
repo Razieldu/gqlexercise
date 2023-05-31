@@ -1,4 +1,3 @@
-import { MD5 } from "crypto-js";
 
 export const createColumns = (permission) => {
   const heads = [

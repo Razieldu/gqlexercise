@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { SEARCH_USERS_QUERY, getFavorite } from "../GQL/query/query";
 import { UPDATE_USER_MUTATION } from "../GQL/mutation/mutations";
 import { useMutation } from "@apollo/client";
-import client from "../apollo.js";
+import client from "../GQL/apollo";
 export const handleSearchDataContext = React.createContext();
 
 export const SearchDataHandlerContextProvider = (props) => {

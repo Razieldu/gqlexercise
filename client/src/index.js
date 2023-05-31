@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+import "./index.scss";
 import { ApolloProvider } from "@apollo/client";
-import client from "./apollo";
+import client from "./GQL/apollo";
 import { SearchDataHandlerContextProvider } from "./store/handleSearchContextApi";
 import { UserAccountProvider } from "./store/handleUserAccountContextApi";
 import { RouterProvider } from "react-router-dom";
-import router from "./routers.js/routers";
+import router from "./routers/routers";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

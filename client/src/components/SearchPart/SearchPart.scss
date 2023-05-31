@@ -1,0 +1,32 @@
+@mixin dynamicColumns($value) {
+  @if $value == 1 {
+    grid-template-columns: 1fr;
+  } @else {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.searchPart {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 235vh;
+  width: 500px;
+  min-height: 300px;
+  flex-direction: column;
+  gap: 10px;
+  .inputAndButton {
+    display: flex;
+    justify-content: center;
+  }
+  .renderGetDataPart {
+    display: grid;
+    padding-top: 40px;
+    &.lengthOne {
+      grid-template-columns: 1fr;
+    }
+    &.lengthNotOne {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+}
