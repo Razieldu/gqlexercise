@@ -12,8 +12,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-// import { useMutation } from "@apollo/client";
-// import { REGISTER_USER } from "../GQL/mutation/mutations";
+import { useMutation } from "@apollo/client";
+import { RESET_PASSWORD } from "../../GQL/mutation/mutations";
 // import { useNavigate } from "react-router-dom";
 import { userAccountContextAPi } from "../../store/handleUserAccountContextApi";
 import { Navigate } from "react-router-dom";
@@ -38,17 +38,30 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignUp() {
+export default function ForgotPassword() {
+  // const [isLoading, setIsLoaiding] = React.useState(false);
+  const [message, setMessage] = React.useState("");
   const ctx = React.useContext(userAccountContextAPi);
+  const [resetPassword, { loading, error }] = useMutation(RESET_PASSWORD);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
     try {
-    } catch (error) {}
-
+      if (userData.get("email") === "") {
+        alert("請輸入電子郵件");
+        return;
+      }
+      const { data } = await resetPassword({
+        variables: {
+          email: userData.get("email"),
+        },
+      });
+      setMessage(data.sendPasswordResetEmail.message.message);
+    } catch (error) {
+      console.error(error);
+    }
     console.log({
       email: userData.get("email"),
-      password: userData.get("password"),
     });
   };
 
@@ -79,7 +92,7 @@ export default function SignUp() {
               sx={{ mt: 3 }}
             >
               <Grid container spacing={2}>
-                <Grid item sx={{width:"25vw"}} >
+                <Grid item sx={{ width: "25vw" }}>
                   <TextField
                     required
                     fullWidth
@@ -101,13 +114,13 @@ export default function SignUp() {
                   />
                 </Grid> */}
                 {/* <Grid item   sx={{ textAlign:"center",mt: 2, mb: 2 }} xs={12}> */}
-                  {/* <FormControlLabel
+                {/* <FormControlLabel
                     control={
                       <Checkbox value="allowExtraEmails" color="primary" />
                     }
                     label="我想收到活動相關資訊"
                   /> */}
-                  {/* 發送重置郵件至您的信箱 */}
+                {/* 發送重置郵件至您的信箱 */}
                 {/* </Grid> */}
               </Grid>
               <Button
@@ -116,7 +129,7 @@ export default function SignUp() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                發送郵件
+                {message?"重置電子郵件已寄送":"發送郵件"}
                 {/* {loading ? "發送郵件中..." : "發送E-mail"} */}
               </Button>
               <Grid container justifyContent="flex-end">

@@ -3,6 +3,7 @@ const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { errorMonitor } = require("nodemailer/lib/xoauth2");
 const uri = process.env.DB_HOST;
 
 const client = new MongoClient(uri, {
@@ -279,7 +280,7 @@ async function resetPassword(email, databaseName, collectionName) {
   try {
     await client.connect();
     const database = client.db(databaseName);
-    const collection = database.collection(collectionName);
+    let collection = database.collection(collectionName);
     const user = await collection.findOne({
       username: email,
     });
@@ -291,9 +292,18 @@ async function resetPassword(email, databaseName, collectionName) {
       {
         username: email,
       },
-      "RESETPASSWORD",
+      `RESETPASSWORD${Math.random() * 1000}`,
       { expiresIn: "1h" }
     );
+
+    const verifyData = { email, token };
+    collection = database.collection("resetPasswordArea");
+    const alreadyExistingOne = await collection.findOne({
+      email: email,
+    });
+    if (alreadyExistingOne?.email === email)
+      await collection.deleteOne(alreadyExistingOne);
+    await collection.insertOne(verifyData);
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
@@ -312,8 +322,7 @@ async function resetPassword(email, databaseName, collectionName) {
       from: "s202032808@gmail.com", // 发送方邮箱地址
       to: email, // 接收方邮箱地址
       subject: "密碼重置信", // 邮件主题
-      // text: `點擊重置密碼：\n\nhttps://example.com/reset-password?token=${token}`, // 邮件内容
-      text: `點擊重置密碼：\n\nhttp://localhost:3000`,
+      text: `點擊重置密碼：\n\nhttp://localhost:3000/newPassword/${token}`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -326,10 +335,25 @@ async function resetPassword(email, databaseName, collectionName) {
 
     return {
       status: true,
-      message: { message: "使用者存在" },
+      message: { message: "重置郵件已寄送" },
     };
   } catch (error) {
     console.error(error);
+  }
+}
+
+async function findTokenToVerifyReset(token) {
+  try {
+    await client.connect();
+    const database = client.db("userAccountData");
+    let collection = database.collection("resetPasswordArea");
+    let result = await collection.findOne({ token });
+    if (!result) {
+      throw new Error("token驗證錯誤");
+    }
+    return { permission: true, email: result.email };
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -344,4 +368,5 @@ module.exports = {
   handleFavorite,
   getFavorites,
   resetPassword,
+  findTokenToVerifyReset,
 };

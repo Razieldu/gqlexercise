@@ -9,6 +9,7 @@ const {
   handleFavorite,
   getFavorites,
   resetPassword,
+  findTokenToVerifyReset,
 } = require("../methods/method");
 
 const resolvers = {
@@ -49,6 +50,10 @@ const resolvers = {
       } catch (error) {
         console.error(error);
       }
+    },
+    findTokenToResetPassword: async (_, { token }) => {
+      const data = await findTokenToVerifyReset(token);
+      return data
     },
   },
   Mutation: {
@@ -133,9 +138,9 @@ const resolvers = {
         "userAccountData",
         "userNamePasswordData"
       );
-      return data
-      
+      return data;
     },
+  
   },
 };
 

@@ -27,47 +27,64 @@ export const UPDATE_USER_MUTATION = gql`
   }
 `;
 export const REGISTER_USER = gql`
-mutation Mutation($username: String!, $password: String!, $displayname: String!) {
-  register(username: $username, password: $password, displayname: $displayname) {
-    userData {
-      token
-      username
-      displayname
-      favoritesItems {
-        dataId
+  mutation Mutation(
+    $username: String!
+    $password: String!
+    $displayname: String!
+  ) {
+    register(
+      username: $username
+      password: $password
+      displayname: $displayname
+    ) {
+      userData {
+        token
+        username
+        displayname
+        favoritesItems {
+          dataId
+        }
+      }
+      message {
+        message
       }
     }
-    message {
-      message
-    }
   }
-}
 `;
 
 export const LOGIN_USER = gql`
-mutation Login($username: String!, $password: String!) {
-  login(username: $username, password: $password) {
-    userData {
-      token
-      username
-      displayname
-      favoritesItems {
-        dataId
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      userData {
+        token
+        username
+        displayname
+        favoritesItems {
+          dataId
+        }
+      }
+      message {
+        message
       }
     }
-    message {
-      message
-    }
   }
-}
 `;
 
 export const HANDLE_FAVORITE = gql`
-mutation Mutation($token: String!, $dataId: String!) {
-  handleFavorite(token: $token, dataId: $dataId) {
-    dataId
+  mutation Mutation($token: String!, $dataId: String!) {
+    handleFavorite(token: $token, dataId: $dataId) {
+      dataId
+    }
   }
-}
 `;
 
-
+export const RESET_PASSWORD = gql`
+  mutation SendPasswordResetEmail($email: String!) {
+    sendPasswordResetEmail(email: $email) {
+      status
+      message {
+        message
+      }
+    }
+  }
+`;

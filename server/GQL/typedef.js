@@ -24,6 +24,12 @@ const typeDefs = gql`
     searchUsers(searchTerm: String!): [User]
     users: [LoginUser!]!
     getFavorites(token: String!): [Favorites]
+    findTokenToResetPassword(token: String!): Permission
+  }
+
+  type Permission {
+    permission: Boolean
+    email: String
   }
 
   type Data {
@@ -96,10 +102,9 @@ const typeDefs = gql`
   }
 
   type ResetPasswordReturn {
-    status: Boolean
-    message:Message
+    status: String
+    message: Message
   }
-
 `;
 
 module.exports = {

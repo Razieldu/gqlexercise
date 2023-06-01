@@ -1,23 +1,22 @@
-import {gql} from "@apollo/client";
+import { gql } from "@apollo/client";
 
-
-  ///處理搜尋
-  export const SEARCH_USERS_QUERY = gql`
-    query SearchUsers($searchTerm: String!) {
-      searchUsers(searchTerm: $searchTerm) {
-        dataId
-        id
-        name
-        email
-        workplace
-        worktitle
-        address
-        tel
-        mobilephone
-      }
+///處理搜尋
+export const SEARCH_USERS_QUERY = gql`
+  query SearchUsers($searchTerm: String!) {
+    searchUsers(searchTerm: $searchTerm) {
+      dataId
+      id
+      name
+      email
+      workplace
+      worktitle
+      address
+      tel
+      mobilephone
     }
-  `;
-  export const getQuery = gql`
+  }
+`;
+export const getQuery = gql`
   query {
     userdata {
       dataId
@@ -31,12 +30,21 @@ import {gql} from "@apollo/client";
       mobilephone
     }
   }
-`
+`;
 
 export const getFavorite = gql`
-query Query($token: String!) {
-  getFavorites(token: $token) {
-    dataId
+  query Query($token: String!) {
+    getFavorites(token: $token) {
+      dataId
+    }
   }
-}
-`
+`;
+
+export const getTokenToVerifyResetPassword = gql`
+  query FindTokenToResetPassword($token: String!) {
+    findTokenToResetPassword(token: $token) {
+      permission
+      email
+    }
+  }
+`;
