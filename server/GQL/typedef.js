@@ -1,41 +1,7 @@
 const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
-  type LoginUser {
-    id: ID!
-    username: String!
-  }
-
-  type UserData {
-    token: String
-    username:String
-    displayname:String
-    favoritesItems:[Favorites]
-  }
-
-  enum UserRole{
-    MEMBER
-    ADMIN
-  }
-
-  type Message {
-    message: String
-  }
-
-  type AuthPayload {
-    userData: UserData
-    message: Message
-  }
-
-  type Query {
-    hello: String
-    userdata: [Data]
-    searchUsers(searchTerm: String!): [User]
-    users: [LoginUser!]!
-    getFavorites(token:String!):[Favorites]
-  }
-
-  type Data {
+  type User {
     dataId: String
     id: String
     name: String
@@ -47,7 +13,20 @@ const typeDefs = gql`
     mobilephone: String
   }
 
-  type User {
+  type LoginUser {
+    id: ID!
+    username: String!
+  }
+
+  type Query {
+    hello: String
+    userdata: [Data]
+    searchUsers(searchTerm: String!): [User]
+    users: [LoginUser!]!
+    getFavorites(token: String!): [Favorites]
+  }
+
+  type Data {
     dataId: String
     id: String
     name: String
@@ -63,13 +42,14 @@ const typeDefs = gql`
     addUser(userInput: UserInput!): String
     deleteUser(id: String!): String
     updateUserData(dataId: String!, UpdateUserInput: UpdateUserInput!): User
-    register(username: String!, password: String!,displayname:String!): AuthPayload!
+    register(
+      username: String!
+      password: String!
+      displayname: String!
+    ): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
     handleFavorite(token: String!, dataId: String!): [Favorites]
-  }
-
-  type Favorites {
-    dataId: String
+    sendPasswordResetEmail(email: String!): ResetPasswordReturn
   }
 
   input UserInput {
@@ -94,6 +74,32 @@ const typeDefs = gql`
     tel: String
     mobilephone: String
   }
+
+  type AuthPayload {
+    userData: UserData
+    message: Message
+  }
+
+  type UserData {
+    token: String
+    username: String
+    displayname: String
+    favoritesItems: [Favorites]
+  }
+
+  type Message {
+    message: String
+  }
+
+  type Favorites {
+    dataId: String
+  }
+
+  type ResetPasswordReturn {
+    status: Boolean
+    message:Message
+  }
+
 `;
 
 module.exports = {

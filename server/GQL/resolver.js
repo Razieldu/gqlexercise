@@ -8,6 +8,7 @@ const {
   loginUser,
   handleFavorite,
   getFavorites,
+  resetPassword,
 } = require("../methods/method");
 
 const resolvers = {
@@ -125,6 +126,15 @@ const resolvers = {
       } catch (error) {
         console.error(error);
       }
+    },
+    sendPasswordResetEmail: async (_, { email }) => {
+      const data = await resetPassword(
+        email,
+        "userAccountData",
+        "userNamePasswordData"
+      );
+      return data
+      
     },
   },
 };

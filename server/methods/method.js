@@ -2,7 +2,7 @@ require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const nodemailer = require("nodemailer");
 const uri = process.env.DB_HOST;
 
 const client = new MongoClient(uri, {
@@ -125,7 +125,7 @@ async function registerUser(userInfo, databaseName, collectionName) {
     const collection = database.collection(collectionName);
 
     // 检查用户名是否已存在
-    console.log(userInfo)
+    console.log(userInfo);
     const existingUser = await collection.findOne({
       username: userInfo.username,
     });
@@ -136,7 +136,7 @@ async function registerUser(userInfo, databaseName, collectionName) {
     let otherData = {
       favoritesItems: [],
       userRole: "",
-      displayname:userInfo.displayname
+      displayname: userInfo.displayname,
     };
     if (userInfo.username === "s202032808@gmail.com") {
       otherData.userRole = "ADMIN";
@@ -144,8 +144,8 @@ async function registerUser(userInfo, databaseName, collectionName) {
       otherData.userRole = "MEMBER";
     }
     let newUserData = { ...userInfo, ...otherData };
-    console.log(newUserData)
-    let { username, password ,displayname} = newUserData;
+    console.log(newUserData);
+    let { username, password, displayname } = newUserData;
     // 对密码进行哈希加密
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -158,7 +158,10 @@ async function registerUser(userInfo, databaseName, collectionName) {
     );
 
     const userData = {
-      token: jwt.sign({ username,userRole:otherData.userRole }, "userLoginKey"),
+      token: jwt.sign(
+        { username, userRole: otherData.userRole },
+        "userLoginKey"
+      ),
       username: username,
       displayname: displayname,
       favoritesItems: [],
@@ -201,7 +204,10 @@ async function loginUser(userInfo, databaseName, collectionName) {
 
     // 生成 JWT Token
     const userData = {
-      token: jwt.sign({ username,userRole:existingUser.userRole }, "userLoginKey"),
+      token: jwt.sign(
+        { username, userRole: existingUser.userRole },
+        "userLoginKey"
+      ),
       username: existingUser.username,
       displayname: existingUser.displayname,
       favoritesItems: existingUser.favoritesItems,
@@ -269,6 +275,64 @@ async function getFavorites(token, databaseName, collectionName) {
   }
 }
 
+async function resetPassword(email, databaseName, collectionName) {
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collection = database.collection(collectionName);
+    const user = await collection.findOne({
+      username: email,
+    });
+
+    if (!user) {
+      return { status: false, message: { message: "帳號不存在" } };
+    }
+    const token = jwt.sign(
+      {
+        username: email,
+      },
+      "RESETPASSWORD",
+      { expiresIn: "1h" }
+    );
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        type: "OAuth2",
+        user: "s202032808@gmail.com",
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+        accessToken: process.env.GOOGLE_ACCESS_TOKEN,
+      },
+    });
+
+    const mailOptions = {
+      from: "s202032808@gmail.com", // 发送方邮箱地址
+      to: email, // 接收方邮箱地址
+      subject: "密碼重置信", // 邮件主题
+      // text: `點擊重置密碼：\n\nhttps://example.com/reset-password?token=${token}`, // 邮件内容
+      text: `點擊重置密碼：\n\nhttp://localhost:3000`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("发送邮件时出现错误:", error);
+      } else {
+        console.log("邮件发送成功:", info.response);
+      }
+    });
+
+    return {
+      status: true,
+      message: { message: "使用者存在" },
+    };
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 module.exports = {
   getUsers,
   searchUser,
@@ -279,4 +343,5 @@ module.exports = {
   loginUser,
   handleFavorite,
   getFavorites,
+  resetPassword,
 };
