@@ -57,6 +57,9 @@ export default function ForgotPassword() {
         },
       });
       setMessage(data.sendPasswordResetEmail.message.message);
+      if (message === "帳號不存在") {
+         return
+      }
     } catch (error) {
       console.error(error);
     }
@@ -129,7 +132,7 @@ export default function ForgotPassword() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                {message?"重置電子郵件已寄送":"發送郵件"}
+                {message ? "重置電子郵件已寄送" : "發送郵件"}
                 {/* {loading ? "發送郵件中..." : "發送E-mail"} */}
               </Button>
               <Grid container justifyContent="flex-end">

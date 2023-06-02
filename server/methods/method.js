@@ -284,7 +284,7 @@ async function resetPassword(email, databaseName, collectionName) {
     const user = await collection.findOne({
       username: email,
     });
-
+     console.log(user)
     if (!user) {
       return { status: false, message: { message: "帳號不存在" } };
     }
