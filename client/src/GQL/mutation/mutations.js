@@ -79,8 +79,8 @@ export const HANDLE_FAVORITE = gql`
 `;
 
 export const RESET_PASSWORD = gql`
-  mutation SendPasswordResetEmail($email: String!) {
-    sendPasswordResetEmail(email: $email) {
+  mutation SendEmailResetPassword($email: String!) {
+    sendEmailResetPassword(email: $email) {
       status
       message {
         message
@@ -88,3 +88,22 @@ export const RESET_PASSWORD = gql`
     }
   }
 `;
+
+export const UPDATEPASSWORD_AND_SIGNIN = gql`
+mutation Mutation($password: String!, $email: String!) {
+  updateUserPassword(password: $password, email: $email) {
+    message {
+      message
+    }
+    userData {
+      username
+      token
+      favoritesItems {
+        dataId
+      }
+      displayname
+    }
+  }
+}
+
+`

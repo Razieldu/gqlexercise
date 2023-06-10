@@ -10,6 +10,7 @@ const {
   getFavorites,
   resetPassword,
   findTokenToVerifyReset,
+  updatePasswordAndSignIn,
 } = require("../methods/method");
 
 const resolvers = {
@@ -53,7 +54,7 @@ const resolvers = {
     },
     findTokenToResetPassword: async (_, { token }) => {
       const data = await findTokenToVerifyReset(token);
-      return data
+      return data;
     },
   },
   Mutation: {
@@ -132,7 +133,7 @@ const resolvers = {
         console.error(error);
       }
     },
-    sendPasswordResetEmail: async (_, { email }) => {
+    sendEmailResetPassword: async (_, { email }) => {
       const data = await resetPassword(
         email,
         "userAccountData",
@@ -140,7 +141,11 @@ const resolvers = {
       );
       return data;
     },
-  
+    updateUserPassword: async (_, { password, email }) => {
+      const data = await updatePasswordAndSignIn(password, email);
+      // console.log(data)
+      return data
+    },
   },
 };
 

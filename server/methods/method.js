@@ -284,7 +284,7 @@ async function resetPassword(email, databaseName, collectionName) {
     const user = await collection.findOne({
       username: email,
     });
-     console.log(user)
+    console.log(user);
     if (!user) {
       return { status: false, message: { message: "帳號不存在" } };
     }
@@ -357,6 +357,29 @@ async function findTokenToVerifyReset(token) {
   }
 }
 
+async function updatePasswordAndSignIn(password, email) {
+  try {
+    await client.connect();
+    const database = client.db("userAccountData");
+    const collection = database.collection("userNamePasswordData");
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await collection.updateOne({ username:email }, { $set: { password:hashedPassword } });
+    let dataOfUser = await collection.findOne({ username: email });
+    console.log(dataOfUser);
+    delete dataOfUser.password;
+    dataOfUser.token = jwt.sign(
+      { username: dataOfUser.usename, userRole: dataOfUser.userRole },
+      "userLoginKey"
+    );
+    return {
+      userData: dataOfUser,
+      message: { message: "密碼重製成功" },
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = {
   getUsers,
   searchUser,
@@ -369,4 +392,5 @@ module.exports = {
   getFavorites,
   resetPassword,
   findTokenToVerifyReset,
+  updatePasswordAndSignIn,
 };

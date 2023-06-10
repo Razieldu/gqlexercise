@@ -55,7 +55,8 @@ const typeDefs = gql`
     ): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
     handleFavorite(token: String!, dataId: String!): [Favorites]
-    sendPasswordResetEmail(email: String!): ResetPasswordReturn
+    sendEmailResetPassword(email: String!): ResetPasswordReturn
+    updateUserPassword(password:String!,email:String!):AuthPayload!
   }
 
   input UserInput {

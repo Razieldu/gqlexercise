@@ -13,11 +13,12 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useMutation } from "@apollo/client";
-import { LOGIN_USER } from "../../GQL/mutation/mutations";
+import { UPDATEPASSWORD_AND_SIGNIN } from "../../GQL/mutation/mutations";
 import { userAccountContextAPi } from "../../store/handleUserAccountContextApi";
 import { Navigate, useLoaderData } from "react-router-dom";
 import client from "../../GQL/apollo";
 import { getTokenToVerifyResetPassword } from "../../GQL/query/query";
+import { useNavigate } from "react-router-dom";
 function Copyright(props) {
   return (
     <Typography
@@ -39,10 +40,14 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function NewPasswordPage() {
+  const [username, setUsername] = React.useState("");
   const [allowEnter, setAllowEnter] = React.useState(false);
   const [permissionReady, setPermissionReady] = React.useState(false);
-  const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
+  const [updatePasswordAndLogin, { loading, error }] = useMutation(
+    UPDATEPASSWORD_AND_SIGNIN
+  );
   const ctx = React.useContext(userAccountContextAPi);
+  let navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
     const userData = new FormData(event.currentTarget);
@@ -55,12 +60,16 @@ export default function NewPasswordPage() {
       return;
     }
     try {
-      const { data } = await loginUser({
+      const { data } = await updatePasswordAndLogin({
         variables: {
           password: userData.get("password"),
+          email: username,
         },
       });
       console.log(`${data}前端data`);
+      ctx.login(data.updateUserPassword.userData);
+      navigate("/home");
+ 
       //   if (data?.login?.message?.message === "使用者名稱不存在") {
       //     alert("用户名不存在");
       //   } else if (data?.login?.message?.message === "密碼不正確") {
@@ -94,6 +103,7 @@ export default function NewPasswordPage() {
     console.log(data.findTokenToResetPassword);
     setAllowEnter(data.findTokenToResetPassword.permission);
     setPermissionReady(true);
+    setUsername(data.findTokenToResetPassword.email);
   };
 
   React.useEffect(() => {
