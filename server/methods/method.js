@@ -368,7 +368,7 @@ async function updatePasswordAndSignIn(password, email) {
     console.log(dataOfUser);
     delete dataOfUser.password;
     dataOfUser.token = jwt.sign(
-      { username: dataOfUser.usename, userRole: dataOfUser.userRole },
+      { username: dataOfUser.username, userRole: dataOfUser.userRole },
       "userLoginKey"
     );
     return {
@@ -394,3 +394,112 @@ module.exports = {
   findTokenToVerifyReset,
   updatePasswordAndSignIn,
 };
+
+
+
+// {
+//   "username": "s202032808@gmail.com",
+//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm9sZSI6IkFETUlOIiwiaWF0IjoxNjg2NDAxMDk5fQ.ZV6mVSU2GNHVGoBRFBWkCWcpSqgIzq6f9CHcVoGtxrQ",
+//   "favoritesItems": [
+//       {
+//           "dataId": "645b780c209079ebb57968c6",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d3",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c8",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d8",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968e1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968ea",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968f9",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d4",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c2",
+//           "__typename": "Favorites"
+//       }
+//   ],
+//   "displayname": "杜承修",
+//   "__typename": "UserData"
+// }
+
+
+
+// {
+//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InMyMDIwMzI4MDhAZ21haWwuY29tIiwidXNlclJvbGUiOiJBRE1JTiIsImlhdCI6MTY4NjQwMTMyNH0.L8fyit_wDHKCAu17cA7bgrT6qfXoDymJ8gHfIG3CWfo",
+//   "username": "s202032808@gmail.com",
+//   "displayname": "杜承修",
+//   "favoritesItems": [
+//       {
+//           "dataId": "645b780c209079ebb57968c6",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d3",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c8",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d8",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968e1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968ea",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968f9",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968d4",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c1",
+//           "__typename": "Favorites"
+//       },
+//       {
+//           "dataId": "645b780c209079ebb57968c2",
+//           "__typename": "Favorites"
+//       }
+//   ],
+//   "__typename": "UserData"

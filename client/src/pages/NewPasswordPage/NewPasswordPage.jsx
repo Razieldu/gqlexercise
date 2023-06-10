@@ -66,7 +66,8 @@ export default function NewPasswordPage() {
           email: username,
         },
       });
-      console.log(`${data}前端data`);
+
+      console.log(data.updateUserPassword.userData)
       ctx.login(data.updateUserPassword.userData);
       navigate("/home");
  
